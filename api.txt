@@ -1,0 +1,193 @@
+POST http://localhost:5000/api/users/register
+{
+  "username": "alisha2",
+  "email": "alisha2@gmail.com",
+  "password": "12345"
+}
+
+
+POST http://localhost:5000/api/users/login
+{
+  "email": "alisha2@gmail.com",
+  "password": "12345"
+}
+RESPONSE {
+  "message": "Login successful",
+  "userId": "6718b9ff4c2d8ab4ba6fcb08",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MThiOWZmNGMyZDhhYjRiYTZmY2IwOCIsImlhdCI6MTcyOTc1MDc4NSwiZXhwIjoxNzI5NzU0Mzg1fQ.wwqFwKxGwtyw_YYF-HeYlOqGKyMYksG7178yKGkuw-8"
+}
+POST http://localhost:5000/api/users/login
+{
+  "email": "alisha3@gmail.com",
+  "password": "123456"
+}
+RESPONSE {
+  "message": "Login successful",
+  "userId": "6719fc4d322f8686f501e67c",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MTlmYzRkMzIyZjg2ODZmNTAxZTY3YyIsImlhdCI6MTcyOTc1NjM4MiwiZXhwIjoxNzI5NzU5OTgyfQ.kmSGrPAHIZM8VwIGm8d6aKqxNfTye-1_ncbM-s3SgSw"
+}
+
+
+POST http://localhost:5000/api/posts
+{
+    "user": {
+        "userId": "6718b9ff4c2d8ab4ba6fcb08"
+    },
+    "content": "This is a test post!",
+    "media": {
+        "type": "photo",
+        "url": "http://example.com/photo.jpg"
+    },
+    "timestamp": "2024-10-23T12:34:56Z"
+}
+
+GET http://localhost:5000/api/posts
+RESPONSE [
+  {
+    "media": {
+      "type": "photo",
+      "url": "http://example.com/photo.jpg"
+    },
+    "user": {
+      "type": "photo",
+      "url": "http://example.com/photo.jpg"
+    }
+    "_id": "6718d2aa08d81f7d61ca6ea9",
+    "postId": "17b9ae65-a97d-4670-974b-87d6b4a834b7",
+    "content": "This is a test post!",
+    "timestamp": "1729680042835",
+    "likes": [
+      "6718b9ff4c2d8ab4ba6fcb08"
+    ],
+    "comments": [
+      {
+        "commentId": "3e2984b6-256e-4818-8b9e-5127341361c7",
+        "userId": "6718b9ff4c2d8ab4ba6fcb08",
+        "content": "This is my comment!",
+        "timestamp": "1729682515283",
+        "likes": [],
+        "replies": [
+          {
+            "replyId": "2264dfb2-52db-4427-8b85-9d9a98d28a2c",
+            "userId": "6718b9ff4c2d8ab4ba6fcb08",
+            "content": "This is my reply!",
+            "timestamp": "1729682743341",
+            "_id": "6718dd3708d81f7d61ca6eaf"
+          }
+        ],
+        "_id": "6718dc5308d81f7d61ca6eac"
+      }
+    ],
+    "__v": 0
+  }
+]
+
+
+POST http://localhost:5000/api/posts/comments
+{
+  "postId": "17b9ae65-a97d-4670-974b-87d6b4a834b7", 
+  "userId": "6718b9ff4c2d8ab4ba6fcb08",
+  "content": "This is my comment!"
+}
+
+POST http://localhost:5000/api/posts/comments/replies
+{
+  "postId": "17b9ae65-a97d-4670-974b-87d6b4a834b7",
+  "commentId": "3e2984b6-256e-4818-8b9e-5127341361c7",
+  "userId": "6718b9ff4c2d8ab4ba6fcb08",
+  "content": "This is my reply!"
+}
+
+
+GET http://localhost:5000/api/posts/17b9ae65-a97d-4670-974b-87d6b4a834b7/comments?page=1&limit=10
+RESPONSE {
+  "postId": "17b9ae65-a97d-4670-974b-87d6b4a834b7",
+  "comments": [
+    {
+      "commentId": "3e2984b6-256e-4818-8b9e-5127341361c7",
+      "userId": "6718b9ff4c2d8ab4ba6fcb08",
+      "content": "This is my comment!",
+      "timestamp": "1729682515283",
+      "likes": [],
+      "replies": [
+        {
+          "replyId": "2264dfb2-52db-4427-8b85-9d9a98d28a2c",
+          "userId": "6718b9ff4c2d8ab4ba6fcb08",
+          "content": "This is my reply!",
+          "timestamp": "1729682743341",
+          "_id": "6718dd3708d81f7d61ca6eaf"
+        }
+      ],
+      "_id": "6718dc5308d81f7d61ca6eac"
+    }
+  ]
+}
+
+POST http://localhost:5000/api/posts/like
+{
+  "postId": "17b9ae65-a97d-4670-974b-87d6b4a834b7",
+  "userId": "6718b9ff4c2d8ab4ba6fcb08"
+}
+RESPONSE {
+  "postId": "17b9ae65-a97d-4670-974b-87d6b4a834b7",
+  "likes": [
+    "6718b9ff4c2d8ab4ba6fcb08"
+  ],
+  "likesCount": 1
+}
+
+POST http://localhost:5000/api/friends/friend-request
+{
+  "fromUserId": "6718b9ff4c2d8ab4ba6fcb08",
+  "toUserId": "6719fc4d322f8686f501e67c"
+}
+RESPONSE {
+  "message": "Friend request sent successfully"
+}
+
+POST http://localhost:5000/api/friends/friend-request/accept
+{
+  "fromUserId": "6718b9ff4c2d8ab4ba6fcb08",
+  "toUserId": "6719fc4d322f8686f501e67c"
+}
+RESPONSE {
+  "message": "Friend request accepted successfully"
+}
+
+http://localhost:5000/api/posts/like
+{
+  "postId": "17b9ae65-a97d-4670-974b-87d6b4a834b7",
+  "userId": "SomeRandomUserId"
+}
+
+RESPONSE {
+  "message": "You must be friends with the user to like their post."
+}
+
+
+POST http://localhost:5000/api/posts
+{
+    "user": {
+        "userId": "6719fc4d322f8686f501e67c"
+    },
+    "content": "This is one another post by alisha3!",
+    "media": {
+        "type": "photo",
+        "url": "http://example.com/photo.jpg"
+    },
+    "timestamp": "2024-10-23T12:34:56Z"
+}
+RESPONSE {
+  "postId": "9000f5d7-7b2c-4aad-9a2f-26279f73d552",
+  "userId": "6719fc4d322f8686f501e67c",
+  "content": "This is one another post by alisha3!",
+  "media": {
+    "type": "photo",
+    "url": "http://example.com/photo.jpg"
+  },
+  "timestamp": "1729762682880",
+  "likes": [],
+  "comments": [],
+  "_id": "671a157a9529d617e3495a8a",
+  "__v": 0
+}

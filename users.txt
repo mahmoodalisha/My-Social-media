@@ -1,0 +1,14 @@
+http://localhost:5000/api/users/register
+{
+  "username": "UserA",
+  "email": "usera@gmail.com",
+  "password": "1234"
+}
+{
+  "username": "UserB",
+  "email": "userb@gmail.com",
+  "password": "12345"
+}
+
+"userId": "671f6a78cf3532215011f875" UserA
+"userId": "671f6ac6cf3532215011f877" UserB
