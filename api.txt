@@ -28,20 +28,38 @@ RESPONSE {
 }
 
 
-POST http://localhost:5000/api/posts
+POST http://localhost:5000/api/posts  //by UserA
 {
     "user": {
-        "userId": "6718b9ff4c2d8ab4ba6fcb08"
+        "userId": "672091560eaec1cffd1ec938"
     },
-    "content": "This is a test post!",
+    "content": "This is a post by UserA",
     "media": {
         "type": "photo",
         "url": "http://example.com/photo.jpg"
-    },
-    "timestamp": "2024-10-23T12:34:56Z"
+    }
+}
+RESPONSE {
+  "postId": "963d9881-bb67-45a7-9aa8-0980c794bca2",
+  "userId": "672091560eaec1cffd1ec938",
+  "content": "This is a post by UserA",
+  "media": {
+    "type": "photo",
+    "url": "http://example.com/photo.jpg"
+  },
+  "timestamp": "1730188673823",
+  "likes": [],
+  "comments": [],
+  "_id": "672095810eaec1cffd1ec948",
+  "__v": 0
 }
 
 GET http://localhost:5000/api/posts
+REQUEST {
+  "userId": "672091560eaec1cffd1ec938",
+  "page": 1,
+  "limit": 10
+}
 RESPONSE [
   {
     "media": {
@@ -92,10 +110,10 @@ POST http://localhost:5000/api/posts/comments
 
 POST http://localhost:5000/api/posts/comments/replies
 {
-  "postId": "17b9ae65-a97d-4670-974b-87d6b4a834b7",
-  "commentId": "3e2984b6-256e-4818-8b9e-5127341361c7",
-  "userId": "6718b9ff4c2d8ab4ba6fcb08",
-  "content": "This is my reply!"
+  "postId": "963d9881-bb67-45a7-9aa8-0980c794bca2",
+  "commentId": "c4552f4f-5368-445a-b825-3a6c6202e37b",
+  "userId": "6720914b0eaec1cffd1ec936",  //id of the user who wants to reply
+  "content": "This is my reply! to user A's comment"
 }
 
 
@@ -164,30 +182,9 @@ RESPONSE {
   "message": "You must be friends with the user to like their post."
 }
 
-
-POST http://localhost:5000/api/posts
+POST http://localhost:5000/api/posts/comments/like
 {
-    "user": {
-        "userId": "6719fc4d322f8686f501e67c"
-    },
-    "content": "This is one another post by alisha3!",
-    "media": {
-        "type": "photo",
-        "url": "http://example.com/photo.jpg"
-    },
-    "timestamp": "2024-10-23T12:34:56Z"
-}
-RESPONSE {
-  "postId": "9000f5d7-7b2c-4aad-9a2f-26279f73d552",
-  "userId": "6719fc4d322f8686f501e67c",
-  "content": "This is one another post by alisha3!",
-  "media": {
-    "type": "photo",
-    "url": "http://example.com/photo.jpg"
-  },
-  "timestamp": "1729762682880",
-  "likes": [],
-  "comments": [],
-  "_id": "671a157a9529d617e3495a8a",
-  "__v": 0
+  "postId": "963d9881-bb67-45a7-9aa8-0980c794bca2", // The ID of the post containing the comment
+  "commentId": "c4552f4f-5368-445a-b825-3a6c6202e37b", // The ID of the comment to like
+  "userId": "6720914b0eaec1cffd1ec936" // The ID of the user liking the comment
 }

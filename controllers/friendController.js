@@ -89,8 +89,17 @@ const acceptFriendRequest = async (req, res) => {
         return res.status(500).json({ message: 'Error creating friendship: ' + error.message });
     }
 
+    // Step 4: Update friends array in both users
+    try {
+        await User.findByIdAndUpdate(fromUserId, { $addToSet: { friends: toUserId } });
+        await User.findByIdAndUpdate(toUserId, { $addToSet: { friends: fromUserId } });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error updating user friends array: ' + error.message });
+    }
+
     res.status(200).json({ message: 'Friend request accepted and friendship created' });
 };
+
 
 
 const getFriends = async (req, res) => {
