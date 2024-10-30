@@ -3,14 +3,22 @@ const Post = require('../models/Post');
 const User = require('../models/User');
 const { v4: uuidv4 } = require('uuid');
 
-// 1. Create a Post
 const createPost = async (req, res) => {
-  const { user, content, media } = req.body;
-  const userId = user.userId;
+  const { content } = req.body;
+  const userId = req.body.userId; // Get userId directly from req.body
 
   try {
     const userRecord = await User.findById(userId);
     if (!userRecord) return res.status(404).json({ message: 'User not found' });
+
+    // Handle media file upload
+    let media = null;
+    if (req.file) {
+      media = {
+        type: req.file.mimetype.startsWith('image') ? 'photo' : 'video',
+        url: `http://localhost:5000/${req.file.path}`
+      };
+    }
 
     const post = new Post({
       postId: uuidv4(),
@@ -28,6 +36,7 @@ const createPost = async (req, res) => {
     res.status(500).json({ message: 'Server error: ' + error.message });
   }
 };
+
 
 // 2. Get Posts by Friends and author himself
 const getPosts = async (req, res) => {

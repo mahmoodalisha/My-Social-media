@@ -1,0 +1,80 @@
+/* src/styles/Navbar.modules.css */
+.navbar {
+    display: flex;
+    justify-content: space-around;
+    padding: 8px; /* Reduced padding */
+    box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.6), 0 3px 10px 0 rgba(0, 0, 0, 0.25); /* Reduced shadow */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #ffffff; /* Adjust as needed */
+    z-index: 1000;
+}
+.navbar p {
+    color: #171717;
+    font-size: 24px; /* Reduced font size */
+    font-weight: 600;
+}
+.nav-menu {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 30px; /* Reduced gap between items */
+    color: #626262;
+    font-size: 16px; /* Reduced font size */
+    font-weight: 500;
+}
+.nav-menu li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+}
+.nav-menu hr {
+    border: none;
+    width: 100%;
+    height: 2px; /* Reduced height */
+    border-radius: 10px;
+    background: #FF4141;
+}
+.nav-login {
+    display: flex;
+    gap: 30px; /* Reduced gap */
+    align-items: center;
+}
+.nav-login button {
+    width: 120px; /* Reduced width */
+    height: 40px; /* Reduced height */
+    outline: none;
+    border: 1px solid #7a7a7a;
+    border-radius: 50px; /* Adjusted radius */
+    color: #515151;
+    font-size: 16px; /* Reduced font size */
+    font-weight: 500;
+    background: white;
+    cursor: pointer;
+}
+.nav-login button:active {
+    background: #f3f3f3;
+}
+.nav-menu a {
+    text-decoration: none; /* Remove underline */
+    color: inherit; /* Make sure the link inherits the color */
+    transition: all 0.3s ease; /* Smooth transition for effects */
+}
+.nav-menu a:focus,
+.nav-menu a:hover,
+.nav-menu a.active {
+    text-decoration: underline; /* Add underline */
+    text-decoration-color: orange; /* Set underline color */
+    text-decoration-thickness: 2px; /* Set thickness of underline */
+    transform: scale(1.1); /* Slightly increase size */
+}
+
+/* Increase text size on active state */
+.nav-menu a:active {
+    transform: scale(1.2); /* Increase size more on click */
+} 
