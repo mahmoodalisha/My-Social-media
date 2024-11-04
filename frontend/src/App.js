@@ -16,7 +16,7 @@ const App = () => (
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route 
-          path="/" 
+          path="/home" 
           element={
             <ProtectedRoute element={Home} /> // Protect the Home route to render posts
           } 

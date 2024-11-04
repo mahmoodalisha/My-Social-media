@@ -25,11 +25,11 @@ const postSchema = new mongoose.Schema({
     type: {
       type: String,
       enum: ['photo', 'video'],
-      required: true,
+      required: false,
     },
-    url: { type: String },
+    url: { type: String, required: false },
   },
-  timestamp: { type: String, required: true },
+  timestamp: { type: Date, default: Date.now },
   likes: { type: [String], default: [] },
   comments: { type: [commentSchema], default: [] },
 });

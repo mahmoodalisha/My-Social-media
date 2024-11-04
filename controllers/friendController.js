@@ -55,7 +55,6 @@ const sendFriendRequest = async (req, res) => {
 };
 
 
-
 const acceptFriendRequest = async (req, res) => {
     const { fromUserId, toUserId } = req.body;
 
@@ -68,7 +67,7 @@ const acceptFriendRequest = async (req, res) => {
         }
     } catch (error) {
         return res.status(500).json({ message: 'Error finding friend request: ' + error.message });
-    }
+    } //write this in one method and call it and make it more readable for all the validations , keep all these steps of validation inside one function and then call it
 
     // Step 2: Update the friend request status to accepted
     try {

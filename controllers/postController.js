@@ -1,22 +1,27 @@
 // controllers/postController.js
+const { v4: uuidv4 } = require('uuid');
 const Post = require('../models/Post');
 const User = require('../models/User');
-const { v4: uuidv4 } = require('uuid');
 
+// 1. Create a Post with file upload
 const createPost = async (req, res) => {
-  const { content } = req.body;
-  const userId = req.body.userId; // Get userId directly from req.body
+  const { userId, content } = req.body; // Extract userId and content from the body
 
   try {
     const userRecord = await User.findById(userId);
     if (!userRecord) return res.status(404).json({ message: 'User not found' });
 
-    // Handle media file upload
+    // Handle the media file
     let media = null;
     if (req.file) {
+      const validMimeTypes = ['image/jpeg', 'image/png', 'video/mp4']; // Allowed MIME types
+      if (!validMimeTypes.includes(req.file.mimetype)) {
+        return res.status(400).json({ message: 'Invalid file type. Only JPEG, PNG, and MP4 are allowed.' });
+      }
+
       media = {
-        type: req.file.mimetype.startsWith('image') ? 'photo' : 'video',
-        url: `http://localhost:5000/${req.file.path}`
+        type: req.file.mimetype.startsWith('image') ? 'photo' : 'video', // Determine media type
+        url: req.file.filename, 
       };
     }
 
@@ -25,7 +30,7 @@ const createPost = async (req, res) => {
       userId,
       content,
       media,
-      timestamp: Date.now().toString(),
+      timestamp: Date.now(), // Use Date.now() directly
       likes: [],
       comments: [],
     });
@@ -33,6 +38,7 @@ const createPost = async (req, res) => {
     await post.save();
     res.status(201).json(post);
   } catch (error) {
+    console.error('Error creating post:', error); // Log the error for debugging
     res.status(500).json({ message: 'Server error: ' + error.message });
   }
 };
@@ -40,60 +46,62 @@ const createPost = async (req, res) => {
 
 // 2. Get Posts by Friends and author himself
 const getPosts = async (req, res) => {
-  const { userId, page = 1, limit = 10 } = req.body;
+  const { userId } = req.query; // Get userId from query parameters
+  const page = parseInt(req.query.page) || 1; // Parse page number
+  const limit = parseInt(req.query.limit) || 10; // Parse limit
 
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    // Fetch the user's own posts and their friends' posts
+    // Fetch user and friends' posts
     const friendPosts = await Post.find({
-      $or: [{ userId: userId }, { userId: { $in: user.friends } }]
+      $or: [{ userId: userId }, { userId: { $in: user.friends } }],
     })
       .skip((page - 1) * limit)
       .limit(limit);
 
-    // Map through the posts to format them as required
+    // Format posts
     const formattedPosts = await Promise.all(friendPosts.map(async (post) => {
-      const postUser = await User.findById(post.userId); // Fetch user details for each post
+      const postUser = await User.findById(post.userId);
 
       return {
-        media: post.media, // Include media details
+        media: post.media,
         user: {
-          type: postUser.media ? postUser.media.type : undefined, // Check if media exists
-          url: postUser.media ? postUser.media.url : undefined, // Check if media exists
+          type: postUser.media ? postUser.media.type : undefined,
+          url: postUser.media ? postUser.media.url : undefined,
+          username: postUser.username, // Ensure username is included
         },
         _id: post._id,
-        postId: post.postId,
         content: post.content,
         timestamp: post.timestamp,
-        likes: post.likes, // Include user IDs who liked the post
+        likes: post.likes,
         comments: await Promise.all(post.comments.map(async (comment) => {
-          const commentUser = await User.findById(comment.userId); // Fetch user details for the comment
+          const commentUser = await User.findById(comment.userId);
 
           return {
             commentId: comment.commentId,
             userId: comment.userId,
-            userName: commentUser ? commentUser.username : undefined, // Assuming you have a username field in User model
+            userName: commentUser ? commentUser.username : undefined,
             content: comment.content,
             timestamp: comment.timestamp,
-            likes: comment.likes, // Include user IDs who liked the comment
+            likes: comment.likes,
             replies: await Promise.all(comment.replies.map(async (reply) => {
-              const replyUser = await User.findById(reply.userId); // Fetch user details for the reply
+              const replyUser = await User.findById(reply.userId);
 
               return {
                 replyId: reply.replyId,
                 userId: reply.userId,
-                userName: replyUser ? replyUser.username : undefined, // Assuming you have a username field in User model
+                userName: replyUser ? replyUser.username : undefined,
                 content: reply.content,
                 timestamp: reply.timestamp,
-                _id: reply._id
+                _id: reply._id,
               };
             })),
-            _id: comment._id
+            _id: comment._id,
           };
         })),
-        __v: post.__v
+        __v: post.__v,
       };
     }));
 
@@ -102,8 +110,6 @@ const getPosts = async (req, res) => {
     res.status(500).json({ message: 'Server error: ' + error.message });
   }
 };
-
-
 
 // 3. Get Post with Paginated Comments
 const getPostWithComments = async (req, res) => {
@@ -132,14 +138,14 @@ const likePost = async (req, res) => {
   const { postId, fromUserId } = req.body;
 
   try {
-    const user = await User.findById(fromUserId);
+    const user = await User.findById(fromUserId);    //do this in one line 
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     const post = await Post.findOne({ postId });
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
     // Check if the user is the post owner or a friend of the post owner
-    const postOwner = await User.findById(post.userId);
+    const postOwner = await User.findById(post.userId);    //not required validate post owner id from this line of code const post = await Post.findOne({ postId });
     const isPostOwner = postOwner._id.toString() === fromUserId;
     const isFriend = postOwner.friends.includes(fromUserId);
 

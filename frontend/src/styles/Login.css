@@ -1,0 +1,72 @@
+/* Page background */
+body {
+    background-color: #000; /* Black background */
+    color: #fff; /* White text */
+}
+
+/* General container styling */
+.login-container, .register-container {
+    max-width: 800px; /* Reduced width for better alignment */
+    margin-top: 50px;
+    min-height: 600px; /* Added minimum height */
+}
+
+/* Card styling */
+.card {
+    border-radius: 10px;
+    background-color: #1a1a1a; /* Dark background for the card */
+    color: #ffffff; /* White text */
+    border: none;
+}
+
+/* Heading styling */
+h2 {
+    color: #8b0c0c; /* Red color for headings */
+}
+
+/* Input fields */
+.form-control {
+    background-color: #333; /* Dark background for inputs */
+    color: #fff; /* White text */
+    border: 1px solid #555; /* Subtle border */
+    margin: 0; /* Remove auto margin */
+}
+
+.form-control:focus {
+    background-color: #444; /* Slightly lighter on focus */
+    border-color: #8b0c0c; /* Red border on focus */
+    box-shadow: none;
+}
+
+/* Label styling */
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem; /* Space between label and input */
+    font-weight: bold; /* Make label text bold */
+}
+
+/* Button styling */
+.btn-primary {
+    background-color: #8b0c0c; /* Red background */
+    border-color: #8b0c0c;
+}
+
+.btn-primary:hover {
+    background-color: #b30000; /* Darker red on hover */
+    border-color: #b30000;
+}
+
+/* Link styling */
+a {
+    color: #e60000;
+}
+
+a:hover {
+    color: #ff4d4d; /* Lighter red on hover */
+}
+
+/* Center button container */
+.button-container {
+    display: flex;
+    justify-content: center;
+}
