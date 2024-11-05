@@ -30,10 +30,14 @@ const postSchema = new mongoose.Schema({
     url: { type: String, required: false },
   },
   timestamp: { type: Date, default: Date.now },
-  likes: { type: [String], default: [] },
   comments: { type: [commentSchema], default: [] },
 });
+const likeSchema = new mongoose.Schema({
+  postId: { type: String },
+  userId: { type: String },
+}, { timestamps: true });
 
 const Post = mongoose.model('Post', postSchema);
+const Like = mongoose.model('Like', likeSchema);
 
-module.exports = Post;
+module.exports = { Post, Like };

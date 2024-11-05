@@ -73,3 +73,82 @@ button:disabled {
   background-color: #bbb;
   cursor: not-allowed;
 }
+
+.like-button {
+  background-color: #fff; /* White background */
+  border: none;
+  border-radius: 50%; /* Circle around the icon */
+  padding: 10px; /* Space around the icon */
+  cursor: pointer;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for better visual */
+}
+
+.like-button:focus {
+  outline: none; /* Remove focus outline */
+}
+.modal {
+  display: flex;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.likes-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  border-radius: 8px;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal-content ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.modal-content li {
+  margin: 5px 0;
+}
+
+.like-count {
+  cursor: pointer;
+  color: #007bff;
+  text-decoration: underline;
+}

@@ -1,6 +1,6 @@
 // controllers/postController.js
 const { v4: uuidv4 } = require('uuid');
-const Post = require('../models/Post');
+const { Post, Like } = require('../models/Post');
 const User = require('../models/User');
 
 // 1. Create a Post with file upload
@@ -64,6 +64,7 @@ const getPosts = async (req, res) => {
     // Format posts
     const formattedPosts = await Promise.all(friendPosts.map(async (post) => {
       const postUser = await User.findById(post.userId);
+      const likesCount = await Like.countDocuments({ postId: post._id });
 
       return {
         media: post.media,
@@ -76,6 +77,7 @@ const getPosts = async (req, res) => {
         content: post.content,
         timestamp: post.timestamp,
         likes: post.likes,
+        likesCount: likesCount,
         comments: await Promise.all(post.comments.map(async (comment) => {
           const commentUser = await User.findById(comment.userId);
 
@@ -113,17 +115,22 @@ const getPosts = async (req, res) => {
 
 // 3. Get Post with Paginated Comments
 const getPostWithComments = async (req, res) => {
-  const { postId } = req.params;
-  const { page = 1, limit = 10 } = req.query;
-  const { userId } = req.body;
+  const { postId } = req.params; // Get postId from URL parameters
+  const { page = 1, limit = 10, userId } = req.query; // Get userId from query parameters, not body
 
   try {
     const post = await Post.findOne({ postId });
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
     const postOwner = await User.findById(post.userId);
-    if (!postOwner.friends.includes(userId)) {
-      return res.status(403).json({ message: 'You must be friends with the post owner to view comments.' });
+    if (!postOwner) return res.status(404).json({ message: 'Post owner not found' });
+
+    // Check if the user is the post owner or a friend
+    const isFriend = postOwner.friends.includes(userId);
+    const isOwner = postOwner._id.toString() === userId; // Ensure both are strings for comparison
+
+    if (!isFriend && !isOwner) {
+      return res.status(403).json({ message: 'You must be friends with the post owner or the owner themselves to view comments.' });
     }
 
     const paginatedComments = post.comments.slice((page - 1) * limit, page * limit);
@@ -133,33 +140,63 @@ const getPostWithComments = async (req, res) => {
   }
 };
 
-// Like a Post
+//4.Like a Post
 const likePost = async (req, res) => {
   const { postId, fromUserId } = req.body;
 
+  // Validate input
+  if (!postId || !fromUserId) {
+    return res.status(400).json({ message: 'postId and fromUserId are required' });
+  }
+
+  console.log("Received request to like post:", { postId, fromUserId });
+
   try {
-    const user = await User.findById(fromUserId);    //do this in one line 
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    const user = await User.findById(fromUserId);
+    console.log("User found:", user);
 
-    const post = await Post.findOne({ postId });
-    if (!post) return res.status(404).json({ message: 'Post not found' });
-
-    // Check if the user is the post owner or a friend of the post owner
-    const postOwner = await User.findById(post.userId);    //not required validate post owner id from this line of code const post = await Post.findOne({ postId });
-    const isPostOwner = postOwner._id.toString() === fromUserId;
-    const isFriend = postOwner.friends.includes(fromUserId);
-
-    if (!isPostOwner && !isFriend) {
-      return res.status(403).json({ message: 'You must be friends with the post owner to like this post.' });
+    if (!user) {
+      console.error(`User not found with ID: ${fromUserId}`);
+      return res.status(404).json({ message: 'User not found' });
     }
 
-    post.likes = Array.from(new Set([...post.likes, fromUserId]));
-    await post.save();
-    res.status(200).json(post);
+    const post = await Post.findById(postId);
+    console.log("Post found:", post);
+
+    if (!post) {
+      console.error(`Post not found with ID: ${postId}`);
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    const existingLike = await Like.findOne({ postId, userId: fromUserId });
+    console.log("Existing like:", existingLike);
+
+    if (existingLike) {
+      // Remove like
+      await Like.deleteOne({ postId, userId: fromUserId });
+
+      // Fetch updated likes count
+      const updatedLikes = await Like.find({ postId });
+      const likesCount = updatedLikes.length;
+
+      return res.status(200).json({ message: 'Like removed', likes: updatedLikes, likesCount });
+    } else {
+      // Add like
+      const newLike = new Like({ postId, userId: fromUserId });
+      await newLike.save();
+
+      // Fetch updated likes count
+      const updatedLikes = await Like.find({ postId });
+      const likesCount = updatedLikes.length;
+
+      return res.status(201).json({ message: 'Post liked', likes: updatedLikes, likesCount });
+    }
   } catch (error) {
+    console.error("Error in likePost:", error);
     res.status(500).json({ message: 'Server error: ' + error.message });
   }
 };
+
 
 // 5. Add a Comment
 const addComment = async (req, res) => {
@@ -198,7 +235,6 @@ const addComment = async (req, res) => {
     res.status(500).json({ message: 'Server error: ' + error.message });
   }
 };
-
 
 // Like a Comment
 const likeComment = async (req, res) => {
