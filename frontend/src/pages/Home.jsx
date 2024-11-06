@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaHeart } from 'react-icons/fa'; // Importing heart icon from react-icons
+import { FaHeart } from 'react-icons/fa'; 
 import "../styles/Home.css";
 
 const Home = () => {
@@ -11,7 +11,9 @@ const Home = () => {
     const [userId, setUserId] = useState(null);
     const [comment, setComment] = useState(""); // State for the comment input
     const [showCommentInput, setShowCommentInput] = useState(false); // State to toggle comment input
-    const limit = 10; // Number of posts per page
+    const [comments, setComments] = useState({}); 
+    const [visibleComments, setVisibleComments] = useState({}); // visibility of comments for each post
+    const limit = 10; 
 
     const fetchPosts = async () => {
         const token = localStorage.getItem('token');
@@ -53,7 +55,7 @@ const Home = () => {
     const toggleLike = async (postId) => {
         const token = localStorage.getItem('token');
         console.log('Toggling like for postId:', postId);
-        
+
         if (!token || !userId) {
             console.error("Token or userId not found. Please log in again.");
             return;
@@ -68,37 +70,80 @@ const Home = () => {
 
             console.log('Response from like/unlike:', response.data);
 
-            // Update the post's like status in the state
-            fetchPosts(); // Re-fetch to get the updated state
+            // Update the like status locally for the post
+            setPosts((prevPosts) =>
+                prevPosts.map((post) =>
+                    post._id === postId
+                        ? {
+                              ...post,
+                              likes: response.data.likes,
+                              likesCount: response.data.likesCount,
+                          }
+                        : post
+                )
+            );
         } catch (error) {
             console.error('Error liking/unliking post:', error.response ? error.response.data : error.message);
         }
     };
 
     const addComment = async (postId) => {
+        console.log('Post ID being sent:', postId);
+
         const token = localStorage.getItem('token');
         console.log('Adding comment for postId:', postId, 'Comment:', comment);
-    
+
         if (!token || !userId) {
             console.error("Token or userId not found. Please log in again.");
             return;
         }
-    
+
         try {
             const response = await axios.post(
                 `http://localhost:5000/api/posts/comments`, 
-                { postId, userId, content: comment },  
+                { postId: String(postId), userId, content: comment }, 
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-    
+
             console.log('Comment added:', response.data);
             setComment(""); // Clear the comment input after adding
-            fetchPosts(); // Re-fetch to get the updated posts with comments
+
+            // Update comments locally for the specific post
+            setComments((prevComments) => ({
+                ...prevComments,
+                [postId]: [...(prevComments[postId] || []), response.data.comment],
+            }));
         } catch (error) {
             console.error('Error adding comment:', error.response ? error.response.data : error.message);
         }
     };
-    
+
+    const loadComments = async (postId) => {
+        const token = localStorage.getItem('token');
+        if (!token || !userId) {
+            console.error("Token or userId not found. Please log in again.");
+            return;
+        }
+
+        try {
+            const response = await axios.get(`http://localhost:5000/api/posts/${postId}/comments`, {
+                params: { userId },
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setComments((prevComments) => ({
+                ...prevComments,
+                [postId]: response.data.comments
+            }));
+
+            // Toggle visibility of comments
+            setVisibleComments((prevVisible) => ({
+                ...prevVisible,
+                [postId]: !prevVisible[postId] // If already visible, hide; if hidden, show
+            }));
+        } catch (error) {
+            console.error('Error fetching comments:', error.response ? error.response.data : error.message);
+        }
+    };
 
     useEffect(() => {
         const storedUserId = localStorage.getItem('userId');
@@ -127,7 +172,7 @@ const Home = () => {
             <h1>Instagram</h1>
             {loading && <p>Loading...</p>}
             {posts.map((post) => {
-                const userLikesPost = post.likes ? post.likes.includes(userId) : false; // Safely check if likes is defined
+                const userLikesPost = post.likes ? post.likes.includes(userId) : false;
                 return (
                     <div key={post._id} className="post">
                         <div className="post-user">
@@ -162,7 +207,7 @@ const Home = () => {
                             <button onClick={() => setShowCommentInput((prev) => !prev)} className="comment-button">
                                 {showCommentInput ? 'Cancel' : 'Add Comment'}
                             </button>
-                            
+
                             {/* Comment Input Field */}
                             {showCommentInput && (
                                 <div className="comment-input">
@@ -175,16 +220,26 @@ const Home = () => {
                                     <button onClick={() => addComment(post._id)}>Submit</button>
                                 </div>
                             )}
+                            {/* Show/Hide Comments Button */}
+                            <button onClick={() => loadComments(post._id)} className="show-comments-button">
+                                {visibleComments[post._id] ? 'Hide Comments' : 'Show Comments'}
+                            </button>
+
+                            {/* Display Comments */}
+                            {visibleComments[post._id] && comments[post._id] && Array.isArray(comments[post._id]) && comments[post._id].map((comment) => (
+                                <div key={comment.commentId} className="comment">
+                                    <p><strong>{comment.username}</strong>: {comment.content}</p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 );
             })}
-
             {hasMorePosts && (
-                <button onClick={loadMorePosts}>Load More</button>
+                <button onClick={loadMorePosts} className="load-more">Load More</button>
             )}
         </div>
     );
 };
 
-export default Home; 
+export default Home;

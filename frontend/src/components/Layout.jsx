@@ -10,7 +10,7 @@ const Layout = ({ children }) => {
     <>
       {/* Conditionally render the Navbar based on the route */}
       {location.pathname !== "/login" && location.pathname !== "/register" && <Navbar />}
-      <div className="content" style={{ paddingTop: '60px' }}> {/* Adjust padding based on your navbar height */}
+      <div className="content" style={{ paddingTop: '60px' }}> 
         {children} {/* Main content area */}
       </div>
     </>

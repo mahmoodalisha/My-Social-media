@@ -13,9 +13,9 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('uploads')); // Serve files from the uploads directory
+app.use(express.static('uploads'));
 
-// Connect to MongoDB
+
 const uri = process.env.MONGODB_URI;
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
@@ -25,18 +25,18 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
         console.error('MongoDB connection error:', err);
     });
 
-// Routes
+
 app.use('/api', postRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/friends', friendRoutes);
 
-// Error handling middleware
+
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ message: 'Something went wrong!', error: err.message });
 });
 
-// Start server
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

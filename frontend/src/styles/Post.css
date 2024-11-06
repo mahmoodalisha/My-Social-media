@@ -1,0 +1,77 @@
+/* Make the entire body have a black background */
+body {
+    background-color: #000; /* Black background for the entire page */
+    color: white; /* White text for better contrast on the black background */
+    margin: 0;
+    font-family: Arial, sans-serif; /* Choose a font family */
+}
+
+/* Center the content on the page with black background */
+.post-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #000; /* Black background for the container */
+}
+
+/* Styling for the form with darker background */
+.post-form {
+    background-color: #333; /* Darker background for the form */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
+}
+
+/* Styling for the textarea with a dark background */
+.post-textarea {
+    width: 100%;
+    height: 150px;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 15px;
+    font-size: 16px;
+    resize: none;
+    background-color: #222; /* Dark background for input */
+    color: white; /* White text inside the input */
+    border: 1px solid #444; /* Dark border */
+}
+
+/* Styling for the file input with a dark background */
+.file-input {
+    width: 100%;
+    padding: 10px;
+    background-color: #8b0c0c;
+    border: none;
+    color: white;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Make the submit button bigger and beautiful */
+.post-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #8b0c0c;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.post-button:hover {
+    background-color: #8b0c0c;
+}
+
+/* Error message style */
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}

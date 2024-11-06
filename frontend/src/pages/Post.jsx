@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import '../styles/Post.css'; 
 
 const Post = () => {
     const [content, setContent] = useState('');
@@ -9,7 +10,7 @@ const Post = () => {
 
     useEffect(() => {
         const id = localStorage.getItem('userId'); // Get userId from localStorage
-        setUserId(id); // Set userId state
+        setUserId(id); 
     }, []);
 
     const handleMediaChange = (e) => {
@@ -49,18 +50,24 @@ const Post = () => {
     };
 
     return (
-        <div>
-            <form onSubmit={handleSubmit}>
+        <div className="post-container">
+            <form onSubmit={handleSubmit} className="post-form">
                 <textarea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     placeholder="Write something..."
                     required
+                    className="post-textarea"
                 />
-                <input type="file" accept="image/*,video/*" onChange={handleMediaChange} />
-                <button type="submit">Post</button>
+                <input
+                    type="file"
+                    accept="image/*,video/*"
+                    onChange={handleMediaChange}
+                    className="file-input"
+                />
+                <button type="submit" className="post-button">Post</button>
             </form>
-            {error && <p style={{ color: 'red' }}>{error}</p>} {/* Display error message if exists */}
+            {error && <p className="error-message">{error}</p>}
         </div>
     );
 };

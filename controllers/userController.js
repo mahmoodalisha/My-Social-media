@@ -40,5 +40,31 @@ const loginUser = async (req, res) => {
   }
 };
 
+// Search users based on a search term (username or email)
+const searchUsers = async (req, res) => {
+  const { searchTerm } = req.query; // searchTerm will come from the query parameters
 
-module.exports = { registerUser, loginUser };
+  if (!searchTerm) {
+      return res.status(400).json({ message: 'Search term is required' });
+  }
+
+  try {
+      // Find users whose username or email matches the search term (case insensitive)
+      const users = await User.find({
+          $or: [
+              { username: { $regex: searchTerm, $options: 'i' } },
+              { email: { $regex: searchTerm, $options: 'i' } }
+          ]
+      }).select('username email'); // Select only username and email to avoid sending sensitive data
+
+      if (users.length === 0) {
+          return res.status(404).json({ message: 'No users found' });
+      }
+
+      res.status(200).json(users);
+  } catch (error) {
+      return res.status(500).json({ message: 'Error searching users: ' + error.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, searchUsers };

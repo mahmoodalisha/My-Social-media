@@ -1,0 +1,100 @@
+/* Center the content on the page */
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: black; /* Black background */
+    font-family: Arial, sans-serif;
+    color: white; /* White text to contrast with the black background */
+}
+
+/* Style the form */
+.search-form {
+    background-color: #333; /* Darker background for the form */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    width: 400px;
+    text-align: center;
+}
+
+/* Style for the search input */
+.search-input {
+    width: 100%;
+    padding: 15px;
+    border-radius: 20px;
+    border: 1px solid #444; /* Dark border */
+    margin-bottom: 15px;
+    font-size: 16px;
+    outline: none;
+    background-color: #222; /* Dark background for input */
+    color: white; /* White text in the input */
+}
+
+.search-input:focus {
+    border-color: #3498db; /* Highlight border on focus */
+}
+
+/* Style for the search button */
+.search-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #8b0c0c; /* Blue button color */
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.search-button:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}
+
+/* Style for error messages */
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Style for the user list */
+.user-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.user-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #444; /* Dark border */
+}
+
+.user-list button {
+    padding: 8px 12px;
+    background-color: #2ecc71; /* Green button color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.user-list button[disabled] {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.user-list button:hover {
+    background-color: #27ae60; /* Darker green on hover */
+}
+
+/* Style for the heading */
+h2 {
+    color: white; /* Make the heading text white */
+    text-align: center;
+    margin-bottom: 20px;
+}
