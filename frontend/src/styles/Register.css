@@ -1,0 +1,70 @@
+.register-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 15px; /* Reduced padding */
+    background-color: #f9f9f9; /* Light background for better contrast */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: #333;
+    width: auto; /* Ensure container width is adjusted based on content */
+    height: auto; /* Let the height adjust based on content */
+}
+
+/* Heading styling */
+h2 {
+    color: #222222 !important; /* Darker color for headings */
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px; /* Reduced margin */
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 3px;
+    display: block;
+    color: #333;
+    font-size: 2.1em; /* Increased font size */
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 8px; /* Reduced padding */
+    margin: 3px 0 10px; /* Reduced margin */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    color: #333;
+    font-size: 2.1em;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+    background-color: #e6e6e6;
+    border-color: #8b0c0c;
+    outline: none;
+    font-size: 2.1em;
+}
+
+/* Error message styling */
+div {
+    color: #b30000;
+    font-size: 0.875em;
+    margin-top: -8px; /* Reduced margin */
+    margin-bottom: 8px; /* Reduced margin */
+}
+
+/* Button styling */
+button[type="submit"] {
+    width: 100%;
+    padding: 8px; /* Reduced padding */
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
+p {
+    font-size: 2.1em; /* Increased font size */
+}

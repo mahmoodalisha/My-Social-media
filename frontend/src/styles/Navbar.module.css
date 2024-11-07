@@ -2,9 +2,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 2rem;
-  background-color: #333;
-  color: #fff;
+  padding: 0.2rem 1rem;
+  background-color: #ddd;
+  color: #333;
+  font-weight: 600;
 }
 
 .nav-menu {
@@ -15,13 +16,17 @@
 
 .nav-menu li a {
   text-decoration: none;
-  color: #fff;
+  color: #333;
   font-size: 1rem;
   transition: color 0.3s;
 }
 
 .nav-menu li a:hover {
-  color: #ddd;
+  text-decoration: underline;
+}
+
+.nav-menu li a.active {
+  text-decoration: underline;
 }
 
 .nav-login {

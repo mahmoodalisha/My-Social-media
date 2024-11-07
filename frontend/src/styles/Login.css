@@ -1,72 +1,115 @@
-/* Page background */
+
 body {
-    background-color: #000; /* Black background */
-    color: #fff; /* White text */
+    background-color: #ffffff; 
+    color: #333; 
 }
 
-/* General container styling */
+
 .login-container, .register-container {
-    max-width: 800px; /* Reduced width for better alignment */
+    max-width: 800px;
     margin-top: 50px;
-    min-height: 600px; /* Added minimum height */
+    min-height: 600px;
 }
 
-/* Card styling */
+
 .card {
     border-radius: 10px;
-    background-color: #1a1a1a; /* Dark background for the card */
-    color: #ffffff; /* White text */
+    background-color: #f9f9f9; 
+    color: #333; 
     border: none;
 }
 
-/* Heading styling */
+
 h2 {
-    color: #8b0c0c; /* Red color for headings */
+    color: #222222 !important; 
+    font-weight: bold;
 }
 
-/* Input fields */
+
 .form-control {
-    background-color: #333; /* Dark background for inputs */
-    color: #fff; /* White text */
-    border: 1px solid #555; /* Subtle border */
-    margin: 0; /* Remove auto margin */
+    background-color: #f0f0f0; 
+    color: #333; 
+    border: 1px solid #ddd; 
+    margin: 0;
 }
 
 .form-control:focus {
-    background-color: #444; /* Slightly lighter on focus */
-    border-color: #8b0c0c; /* Red border on focus */
+    background-color: #e6e6e6; 
+    border-color: #333; 
     box-shadow: none;
 }
 
-/* Label styling */
+
 .form-label {
     display: block;
-    margin-bottom: 0.5rem; /* Space between label and input */
-    font-weight: bold; /* Make label text bold */
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    font-size: 1.1rem; 
 }
 
-/* Button styling */
+
+
 .btn-primary {
-    background-color: #8b0c0c; /* Red background */
-    border-color: #8b0c0c;
+    background-color: #333; 
+    border-color: #333;
 }
 
 .btn-primary:hover {
-    background-color: #b30000; /* Darker red on hover */
+    background-color: #b30000; 
     border-color: #b30000;
 }
 
-/* Link styling */
 a {
     color: #e60000;
 }
 
 a:hover {
-    color: #ff4d4d; /* Lighter red on hover */
+    color: #ff4d4d;
 }
 
-/* Center button container */
 .button-container {
     display: flex;
     justify-content: center;
+}
+
+.search-results {
+    position: absolute;
+    top: 3.5rem;
+    left: 2rem;
+    width: 300px;
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.search-results p {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    color: #333;
+}
+
+.search-results p:hover {
+    background-color: #f1f1f1;
+}
+
+
+.text-center.mt-3 {
+    font-size: 1.2rem; 
+    text-align: center; 
+    margin-top: 1rem; 
+}
+
+
+.text-center.mt-3 a {
+    color: #e60000; 
+}
+
+.text-center.mt-3 a:hover {
+    color: #ff4d4d; 
 }

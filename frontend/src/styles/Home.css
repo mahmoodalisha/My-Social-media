@@ -2,18 +2,19 @@
 .home {
   max-width: 800px;
   margin: 50px auto;
-  padding: 20px;
+  padding: 10px;
   background-color: #f9f9f9; /* Light background */
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   color: #333; /* Default text color */
+  font-size: 1.2rem; /* Increase font size for overall text */
 }
 
 /* Heading styling */
 .home h1 {
   text-align: center;
   color: #222; /* Darker color for better visibility */
-  font-size: 2rem; /* Adjust font size */
+  font-size: 2.5rem; /* Increased font size */
   margin-bottom: 20px;
 }
 
@@ -25,6 +26,7 @@
   border-radius: 8px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
   color: #333; /* Ensure content is visible */
+  font-size: 1.2rem; /* Larger text for posts */
 }
 
 /* Post user section */
@@ -34,13 +36,14 @@
   margin-bottom: 15px;
   font-weight: bold;
   color: #444; /* Darker color for username */
+  font-size: 1.3rem; /* Increased font size */
 }
 
 /* User image */
 .post-user img {
   border-radius: 50%;
-  width: 50px;
-  height: 50px; /* Increase height for better visibility */
+  width: 60px; /* Increase width for better visibility */
+  height: 60px; /* Increase height for better visibility */
   margin-right: 10px;
 }
 
@@ -55,18 +58,20 @@
 .post-content p {
   margin-top: 10px;
   color: #555; /* Darker color for better contrast */
+  font-size: 1.2rem; /* Larger text for content */
 }
 
 /* Load more button */
 button {
   display: block;
   margin: 20px auto;
-  padding: 10px 20px;
+  padding: 12px 25px;
   background-color: #8b0c0c; /* Consistent with theme */
   color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 1.2rem; /* Increased font size */
 }
 
 button:disabled {
@@ -74,18 +79,22 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* Like button */
 .like-button {
   background-color: #fff; /* White background */
   border: none;
   border-radius: 50%; /* Circle around the icon */
-  padding: 10px; /* Space around the icon */
+  padding: 15px; /* Increased space around the icon */
   cursor: pointer;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for better visual */
+  font-size: 1.5rem; /* Larger icon size */
 }
 
 .like-button:focus {
   outline: none; /* Remove focus outline */
 }
+
+/* Modal */
 .modal {
   display: flex;
   position: fixed;
@@ -101,15 +110,16 @@ button:disabled {
 .modal-content {
   background-color: #fefefe;
   margin: 15% auto;
-  padding: 20px;
+  padding: 25px;
   border: 1px solid #888;
   width: 80%;
+  font-size: 1.3rem; /* Increased font size */
 }
 
 .close {
   color: #aaa;
   float: right;
-  font-size: 28px;
+  font-size: 32px; /* Increased font size */
   font-weight: bold;
 }
 
@@ -120,16 +130,18 @@ button:disabled {
   cursor: pointer;
 }
 
+/* Likes Modal */
 .likes-modal {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: #fff;
-  padding: 20px;
+  padding: 25px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   z-index: 1000;
   border-radius: 8px;
+  font-size: 1.3rem; /* Increased font size */
 }
 
 .modal-content {
@@ -144,11 +156,13 @@ button:disabled {
 }
 
 .modal-content li {
-  margin: 5px 0;
+  margin: 8px 0; /* Increased margin */
+  font-size: 1.3rem; /* Increased font size for list items */
 }
 
 .like-count {
   cursor: pointer;
   color: #007bff;
   text-decoration: underline;
+  font-size: 1.3rem; /* Larger font size */
 }

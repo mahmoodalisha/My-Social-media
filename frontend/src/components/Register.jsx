@@ -4,6 +4,7 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import '../styles/Register.css'
 
 const RegisterSchema = Yup.object().shape({
   username: Yup.string().required("Required"),

@@ -1,9 +1,9 @@
-/* Make the entire body have a black background */
+
 body {
-    background-color: #000; /* Black background for the entire page */
+    background-color: #ffffff;; 
     color: white; /* White text for better contrast on the black background */
     margin: 0;
-    font-family: Arial, sans-serif; /* Choose a font family */
+    font-family: Arial, sans-serif; 
 }
 
 /* Center the content on the page with black background */
@@ -12,15 +12,15 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #000; /* Black background for the container */
+    background-color: #ffffff; /* Black background for the container */
 }
 
 /* Styling for the form with darker background */
 .post-form {
-    background-color: #333; /* Darker background for the form */
+    background-color: #ffffff; /* Darker background for the form */
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0.4, 0.6);
     width: 400px;
     text-align: center;
 }
@@ -35,7 +35,7 @@ body {
     margin-bottom: 15px;
     font-size: 16px;
     resize: none;
-    background-color: #222; /* Dark background for input */
+    background-color: #ffffff; /* Dark background for input */
     color: white; /* White text inside the input */
     border: 1px solid #444; /* Dark border */
 }
@@ -44,7 +44,7 @@ body {
 .file-input {
     width: 100%;
     padding: 10px;
-    background-color: #8b0c0c;
+    background-color: #90c4fb;
     border: none;
     color: white;
     border-radius: 10px;
@@ -57,7 +57,7 @@ body {
 .post-button {
     width: 100%;
     padding: 15px;
-    background-color: #8b0c0c;
+    background-color: #90c4fb;
     color: white;
     border: none;
     border-radius: 10px;
