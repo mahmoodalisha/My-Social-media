@@ -201,7 +201,10 @@ const Home = () => {
                                     size={24}
                                 />
                             </button>
-                            <span>{post.likesCount || 0} {post.likesCount === 1 ? 'like' : 'likes'}</span>
+                            <span style={{ color: "#333" }}>
+                                {post.likesCount || 0} {post.likesCount === 1 ? 'like' : 'likes'}
+                                </span>
+
 
                             {/* Comment Button */}
                             <button onClick={() => setShowCommentInput((prev) => !prev)} className="comment-button">

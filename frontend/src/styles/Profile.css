@@ -1,34 +1,67 @@
-/* styles.css or your component-specific styles */
+/* Profile container styling */
 .profile-container {
-    text-align: center;
-    margin-top: 20px;
-  }
-  
-  .profile-picture {
-    margin-bottom: 20px;
-  }
-  
-  .profile-picture-img {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    border: 2px solid #ddd;
-  }
-  
-  input[type="file"] {
-    margin-top: 20px;
-  }
-  
-  button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #45a049;
-  }
-  
+  text-align: center;
+  margin-top: 20px;
+  background-color: #f1f1f1; /* Light grey background */
+  padding: 30px;
+  border-radius: 15px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px; /* Optional: set a max width to make it look better */
+  margin: 0 auto;
+  border: 1px solid #ddd; /* Added a 2px solid grey border */
+}
+
+
+/* Profile picture styling */
+.profile-picture {
+  margin-bottom: 20px;
+}
+
+.profile-picture-img {
+  width: 120px; /* Reduced size */
+  height: 120px; /* Reduced size */
+  border-radius: 50%;
+  border: 2px solid #ddd;
+}
+
+/* File input styling */
+input[type="file"] {
+  margin-top: 20px;
+}
+
+/* Button container for upload and delete buttons */
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px; /* Space between the buttons */
+  margin-top: 20px;
+}
+
+/* Button styling */
+button {
+  padding: 8px 16px; /* Reduced button size */
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px; /* Rounded button edges */
+}
+
+/* Upload button styling */
+.upload-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.upload-button:hover {
+  background-color: #45a049;
+}
+
+/* Delete button styling */
+.delete-button {
+  background-color: #f44336; /* Red color */
+  color: white;
+}
+
+.delete-button:hover {
+  background-color: #e53935; /* Darker red on hover */
+}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import styles from "../styles/Navbar.module.css";
@@ -7,6 +7,53 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [profilePicture, setProfilePicture] = useState("");
+  const [username, setUsername] = useState(""); // State to store the username
+
+  useEffect(() => {
+    // Fetch profile picture and username on component mount
+    const fetchUserProfile = async () => {
+      try {
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+          console.error("User ID not found in localStorage");
+          return;
+        }
+
+        // Fetch profile picture
+        const profileResponse = await axios.get(
+          `http://localhost:5000/api/users/${userId}/get-profile-picture`,
+          {
+            headers: {
+              "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (profileResponse.data.profilePicture) {
+          setProfilePicture(profileResponse.data.profilePicture);
+        }
+
+        // Fetch username
+        const userResponse = await axios.get(
+          `http://localhost:5000/api/users/${userId}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (userResponse.data.username) {
+          setUsername(userResponse.data.username); // Set the username state
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -18,7 +65,7 @@ const Navbar = () => {
     setSearchTerm(value);
 
     if (!value.trim()) {
-      setSearchResults([]);  // Clear results when input is empty
+      setSearchResults([]);
     }
   };
 
@@ -39,7 +86,18 @@ const Navbar = () => {
   return (
     <>
       <nav className={styles.navbar}>
-        <p>Your Logo</p>
+        <div className={styles["logo-container"]}>
+          {profilePicture ? (
+            <img
+              src={`http://localhost:5000/${profilePicture}`}
+              alt="Profile"
+              className={styles["logo-profile-picture"]}
+            />
+          ) : (
+            <p>Your Logo</p>
+          )}
+          {username && <span className={styles.username}> {username}</span>} {/* Render the username beside profile picture */}
+        </div>
         <ul className={styles["nav-menu"]}>
           <li><Link to="/home">Home</Link></li>
           <li><Link to="/post">Post</Link></li>

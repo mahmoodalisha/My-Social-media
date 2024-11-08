@@ -1,0 +1,54 @@
+/* Navbar2.css */
+.navbar2-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column; /* Stack buttons and content vertically */
+  align-items: center; /* Center align everything horizontally */
+  color: #333; /* Apply #333 color for all text in the container */
+}
+
+/* Styling the container for the navbar buttons */
+.navbar2-buttons {
+  display: flex;
+  gap: 5px; /* Make buttons closer */
+  padding: 10px;
+  border: 1px solid #ddd; /* Light border around the button container */
+  border-radius: 8px; /* Slight rounded edges for the box */
+  background-color: #f9f9f9; /* Light background for the container */
+  width: fit-content;
+  margin: 0 auto;
+  color: #333; /* Apply #333 color for button text */
+}
+
+/* Styling the individual buttons */
+.navbar2-buttons button {
+  padding: 6px 12px; /* Smaller buttons with reduced padding */
+  background-color: #333; /* Dark grey background */
+  color: white; /* White text on buttons */
+  border: none;
+  border-radius: 4px; /* Rounded edges for buttons */
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Smooth transition effect */
+}
+
+.navbar2-buttons button:hover {
+  background-color: #555; /* Slightly lighter grey on hover */
+}
+
+.navbar2-buttons .active {
+  background-color: #007bff; /* Blue background for the active button */
+  color: white; /* White text on active button */
+}
+
+/* Styling for the content section */
+.navbar2-content {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #fafafa;
+  border-radius: 8px; /* Rounded edges for the content box */
+  width: 100%; /* Ensure it takes full width of the container */
+  max-width: 600px; /* Optional: Set a maximum width for a more controlled layout */
+  box-sizing: border-box; /* Ensures padding is included in the width calculation */
+  color: #333; /* Apply #333 color for all text in the content */
+}

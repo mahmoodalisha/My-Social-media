@@ -107,9 +107,9 @@ a:hover {
 
 
 .text-center.mt-3 a {
-    color: #e60000; 
+    color: #333; 
 }
 
 .text-center.mt-3 a:hover {
-    color: #ff4d4d; 
+    color: #333; 
 }

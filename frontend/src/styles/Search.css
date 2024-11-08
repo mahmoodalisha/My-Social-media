@@ -40,7 +40,7 @@
 .search-button {
     width: 100%;
     padding: 15px;
-    background-color: #8b0c0c; /* Blue button color */
+    background-color: #333; /* Blue button color */
     color: white;
     border: none;
     border-radius: 20px;

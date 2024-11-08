@@ -5,7 +5,7 @@ import '../styles/Post.css';
 const Post = () => {
     const [content, setContent] = useState('');
     const [media, setMedia] = useState(null);
-    const [userId, setUserId] = useState(null); // Initialize as null
+    const [userId, setUserId] = useState(null); 
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -20,10 +20,9 @@ const Post = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        console.log("User ID:", userId); // Log user ID
+        console.log("User ID:", userId); 
         const token = localStorage.getItem('token');
-        console.log("Token being sent:", token); // Log token before sending
-
+        console.log("Token being sent:", token); 
         const formData = new FormData();
         formData.append('userId', userId);
         formData.append('content', content);
@@ -45,7 +44,7 @@ const Post = () => {
             setError(null);
         } catch (error) {
             console.error('Error creating post:', error.response ? error.response.data : error.message);
-            setError('Failed to create post. Please try again.'); // Update error state
+            setError('Failed to create post. Please try again.'); 
         }
     };
 
