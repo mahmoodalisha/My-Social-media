@@ -1,9 +1,7 @@
-// controllers/postController.js
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4, validate: uuidValidate } = require('uuid');
 const { Post, Like } = require('../models/Post');
 const User = require('../models/User');
 const mongoose = require('mongoose');
-
 
 // 1. Create a Post with file upload
 const createPost = async (req, res) => {
@@ -16,13 +14,13 @@ const createPost = async (req, res) => {
     // Handle the media file
     let media = null;
     if (req.file) {
-      const validMimeTypes = ['image/jpeg', 'image/png', 'video/mp4']; // Allowed MIME types
+      const validMimeTypes = ['image/jpeg', 'image/png', 'video/mp4'];
       if (!validMimeTypes.includes(req.file.mimetype)) {
         return res.status(400).json({ message: 'Invalid file type. Only JPEG, PNG, and MP4 are allowed.' });
       }
 
       media = {
-        type: req.file.mimetype.startsWith('image') ? 'photo' : 'video', // Determine media type
+        type: req.file.mimetype.startsWith('image') ? 'photo' : 'video',
         url: req.file.filename, 
       };
     }
@@ -73,7 +71,7 @@ const getPosts = async (req, res) => {
         user: {
           type: postUser.media ? postUser.media.type : undefined,
           url: postUser.media ? postUser.media.url : undefined,
-          username: postUser.username, // Ensure username is included
+          username: postUser.username, 
         },
         _id: post._id,
         content: post.content,
@@ -117,54 +115,74 @@ const getPosts = async (req, res) => {
 
 // 3. Get Post with Paginated Comments
 const getPostWithComments = async (req, res) => {
-  // Extract postId from URL parameters
-  const { postId } = req.params; 
-  // Extract query parameters for pagination and userId
-  const { page = 1, limit = 10, userId } = req.query; 
+  const { postId } = req.params; // Extract postId from the URL
+  const { page = 1, limit = 10, userId } = req.query; // Pagination and userId from query parameters
 
   try {
-    // Ensure postId is a valid ObjectId before querying the database
+    // Validate the postId
     if (!mongoose.Types.ObjectId.isValid(postId)) {
       return res.status(400).json({ message: 'Invalid postId format' });
     }
 
-    // Convert postId to ObjectId for proper querying
+    // Convert postId to ObjectId for querying
     const objectIdPostId = new mongoose.Types.ObjectId(postId);
 
-    // Find the post by ObjectId
+    // Find the post by ID
     const post = await Post.findOne({ _id: objectIdPostId });
-    if (!post) return res.status(404).json({ message: 'Post not found' });
-
-    // Find the post owner by userId (assumed to be the user who created the post)
-    const postOwner = await User.findById(post.userId);
-    if (!postOwner) return res.status(404).json({ message: 'Post owner not found' });
-
-    // Check if the user is the post owner or a friend
-    const isFriend = postOwner.friends.includes(userId);
-    const isOwner = postOwner._id.toString() === userId; // Ensure both are strings for comparison
-
-    if (!isFriend && !isOwner) {
-      return res.status(403).json({ message: 'You must be friends with the post owner or the owner themselves to view comments.' });
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
     }
 
-    // Fetch the comments with the usernames of the users who commented
-    const commentsWithUsernames = await Promise.all(post.comments.map(async (comment) => {
-      const user = await User.findById(comment.userId);
-      return {
-        commentId: comment.commentId,
-        userId: comment.userId,
-        username: user ? user.username : 'Unknown', // Replace with actual username field
-        content: comment.content,
-        timestamp: comment.timestamp,
-        likes: comment.likes,
-        replies: comment.replies,
-      };
-    }));
+    // Get post owner details
+    const postOwner = await User.findById(post.userId);
+    if (!postOwner) {
+      return res.status(404).json({ message: 'Post owner not found' });
+    }
 
-    // Paginate the comments
+    // Check access permissions
+    if (
+      !(postOwner.friends.includes(userId) || postOwner._id.toString() === userId)
+    ) {
+      return res.status(403).json({
+        message: 'You must be friends with the post owner or the owner themselves to view comments.',
+      });
+    }
+
+    // Fetch comments with usernames and their replies
+    const commentsWithUsernames = await Promise.all(
+      post.comments.map(async (comment) => {
+        // Get the username of the commenter
+        const user = await User.findById(comment.userId);
+
+        // Fetch replies with usernames
+        const repliesWithUsernames = await Promise.all(
+          comment.replies.map(async (reply) => {
+            const replyUser = await User.findById(reply.userId);
+            return {
+              replyId: reply.replyId,
+              userId: reply.userId,
+              username: replyUser ? replyUser.username : 'Unknown', 
+              content: reply.content,
+              timestamp: reply.timestamp,
+            };
+          })
+        );
+
+        // Return comment with its replies
+        return {
+          commentId: comment.commentId,
+          userId: comment.userId,
+          username: user ? user.username : 'Unknown', 
+          content: comment.content,
+          timestamp: comment.timestamp,
+          likes: comment.likes,
+          replies: repliesWithUsernames, 
+        };
+      })
+    );
+
+    // Paginate comments
     const paginatedComments = commentsWithUsernames.slice((page - 1) * limit, page * limit);
-
-    // Return the post along with the paginated comments
     res.status(200).json({ postId: post.postId, comments: paginatedComments });
   } catch (error) {
     res.status(500).json({ message: 'Server error: ' + error.message });
@@ -172,11 +190,13 @@ const getPostWithComments = async (req, res) => {
 };
 
 
+
+
 //4.Like a Post
 const likePost = async (req, res) => {
   const { postId, fromUserId } = req.body;
 
-  // Validate input
+  // Validate
   if (!postId || !fromUserId) {
     return res.status(400).json({ message: 'postId and fromUserId are required' });
   }
@@ -217,7 +237,7 @@ const likePost = async (req, res) => {
       const newLike = new Like({ postId, userId: fromUserId });
       await newLike.save();
 
-      // Fetch updated likes count
+      
       const updatedLikes = await Like.find({ postId });
       const likesCount = updatedLikes.length;
 
@@ -229,6 +249,24 @@ const likePost = async (req, res) => {
   }
 };
 
+// Helper function to check if a user is authorized
+const isUserAuthorized = async (postOwnerId, userId, commentOwnerId = null, requiredRole = 'friendOrOwner') => {
+  const postOwner = await User.findById(postOwnerId);
+  if (!postOwner) return false;
+
+  const isPostOwner = postOwner._id.toString() === userId;
+  const isFriend = postOwner.friends.includes(userId);
+  const isCommentOwner = commentOwnerId === userId;
+
+  switch (requiredRole) {
+    case 'friendOrOwner':
+      return isFriend || isPostOwner;
+    case 'friendOwnerOrCommentOwner':
+      return isFriend || isPostOwner || isCommentOwner;
+    default:
+      return false;
+  }
+};
 
 // Add a Comment
 const addComment = async (req, res) => {
@@ -242,8 +280,7 @@ const addComment = async (req, res) => {
   }
 
   try {
-    // Convert postId to an ObjectId type for querying
-    postId = new mongoose.Types.ObjectId(postId);  // Correct way to instantiate ObjectId
+    postId = new mongoose.Types.ObjectId(postId);
 
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: 'User not found' });
@@ -251,13 +288,8 @@ const addComment = async (req, res) => {
     const post = await Post.findById(postId);
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
-    const postOwner = await User.findById(post.userId);
-
-    // Check if the user is the post owner or a friend
-    const isFriend = postOwner.friends.includes(userId);
-    const isOwner = postOwner._id.toString() === userId;
-
-    if (!isFriend && !isOwner) {
+    const authorized = await isUserAuthorized(post.userId, userId);
+    if (!authorized) {
       return res.status(403).json({ message: 'You must be friends with the post owner or the owner themselves to comment on this post.' });
     }
 
@@ -278,74 +310,189 @@ const addComment = async (req, res) => {
   }
 };
 
-
 // Like a Comment
 const likeComment = async (req, res) => {
   const { postId, commentId, userId } = req.body;
 
+  // Validate inputs
+  if (!postId || !commentId || !userId) {
+    return res.status(400).json({ message: 'postId, commentId, and userId are required' });
+  }
+
   try {
+    // Find the user
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
+    // Find the post by `postId` 
     const post = await Post.findOne({ postId });
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
-    const comment = post.comments.find(comment => comment.commentId === commentId);
+    // Find the comment within the post
+    const comment = post.comments.find((c) => c.commentId === commentId);
     if (!comment) return res.status(404).json({ message: 'Comment not found' });
 
-    // Check if the user is the post owner or a friend of the post owner
-    const postOwner = await User.findById(post.userId);
-    const isPostOwner = postOwner._id.toString() === userId;
-    const isFriend = postOwner.friends.includes(userId);
-
-    if (!isPostOwner && !isFriend) {
+     
+    const authorized = await isUserAuthorized(post.userId, userId);
+    if (!authorized) {
       return res.status(403).json({ message: 'You must be friends with the post owner to like this comment.' });
     }
 
-    comment.likes = Array.from(new Set([...comment.likes, userId]));
+    // Add like if not already liked by this user
+    if (!comment.likes.includes(userId)) {
+      comment.likes.push(userId);
+    } else {
+      // Remove like if the user already liked it
+      comment.likes = comment.likes.filter((like) => like !== userId);
+    }
+
+    
     await post.save();
-    res.status(200).json(post);
+    res.status(200).json({ message: 'Comment like status updated', likes: comment.likes });
   } catch (error) {
+    console.error("Error in likeComment:", error.message);
     res.status(500).json({ message: 'Server error: ' + error.message });
   }
 };
 
+
 const addReply = async (req, res) => {
-  const { postId, commentId, userId, content } = req.body;
+  console.log('Received request body:', req.body);
+
+  let { postId, commentId, userId, content } = req.body;
 
   try {
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
-    const post = await Post.findOne({ postId });
-    if (!post) return res.status(404).json({ message: 'Post not found' });
-
-    const comment = post.comments.find(comment => comment.commentId === commentId);
-    if (!comment) return res.status(404).json({ message: 'Comment not found' });
-
-    const postOwner = await User.findById(post.userId);
-    
-    // Check if the user is the post owner, the comment owner, or a friend of the post owner
-    const isCommentOwner = comment.userId === userId;
-    const isPostOwner = postOwner._id.toString() === userId;
-    const isFriend = postOwner.friends.includes(userId);
-
-    if (!isCommentOwner && !isPostOwner && !isFriend) {
-      return res.status(403).json({ message: 'You must be friends with the post owner or the comment owner to reply to this comment.' });
+   
+    const post = await Post.findOne({ _id: new mongoose.Types.ObjectId(postId) });
+    if (!post) {
+      console.log('Post not found for postId:', postId);
+      return res.status(404).json({ message: 'Post not found' });
     }
 
+    
+    const comment = post.comments.find(c => c.commentId === commentId);
+    if (!comment) {
+      console.log('Comment not found for commentId:', commentId);
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    
+    const authorized = await isUserAuthorized(post.userId, userId, comment.userId, 'friendOwnerOrCommentOwner');
+    if (!authorized) {
+      return res.status(403).json({
+        message: 'You must be friends with the post owner, the comment owner, or the post owner themselves to reply to this comment.',
+      });
+    }
+
+    
     const reply = {
-      replyId: uuidv4(),
+      replyId: uuidv4(), 
       userId,
       content,
       timestamp: Date.now().toString(),
     };
-    
+
     comment.replies.push(reply);
+
+    
     await post.save();
-    res.status(201).json(post);
+    return res.status(201).json({ message: 'Reply added successfully', replies: comment.replies });
+
   } catch (error) {
-    res.status(500).json({ message: 'Server error: ' + error.message });
+    console.error('Error during addReply:', error.message);
+    return res.status(500).json({ message: 'Server error: ' + error.message });
+  }
+};
+
+
+
+const editComment = async (req, res) => {
+  console.log('Received request body:', req.body);  
+
+  let { postId, userId, commentId, newContent } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(postId)) {
+      console.log('Invalid postId:', postId);
+      return res.status(400).json({ message: 'Invalid postId format' });
+  }
+
+  try {
+      postId = new mongoose.Types.ObjectId(postId);
+      const post = await Post.findById(postId);
+
+      if (!post) {
+          console.log('Post not found for postId:', postId);
+          return res.status(404).json({ message: 'Post not found' });
+      }
+
+      const comment = post.comments.find(c => c.commentId === commentId);
+      if (!comment) {
+          console.log('Comment not found for commentId:', commentId);
+          return res.status(404).json({ message: 'Comment not found' });
+      }
+
+      // Verify if the logged-in user is the author of the comment
+      if (comment.userId.toString() !== userId) {
+          return res.status(403).json({ message: 'You do not have permission to edit this comment' });
+      }
+
+      // Update the comment content
+      comment.content = newContent;
+      await post.save();
+      return res.status(200).json({ message: 'Comment edited successfully' });
+
+  } catch (error) {
+      console.error('Error during comment edit:', error.message);
+      res.status(500).json({ message: 'Server error: ' + error.message });
+  }
+};
+
+
+// Delete a Comment
+const deleteComment = async (req, res) => {
+  console.log('Received request body:', req.body);
+
+  let { postId, userId, commentId } = req.body;
+  console.log('Received postId:', postId);
+
+  //postId is a valid MongoDB ObjectId
+  if (!mongoose.Types.ObjectId.isValid(postId)) {
+      console.log('Invalid postId:', postId);
+      return res.status(400).json({ message: 'Invalid postId format' });
+  }
+
+  try {
+      // Convert postId to MongoDB ObjectId
+      postId = new mongoose.Types.ObjectId(postId);
+      const post = await Post.findById(postId);
+
+      if (!post) {
+          console.log('Post not found for postId:', postId);
+          return res.status(404).json({ message: 'Post not found' });
+      }
+
+      // Find the comment to be deleted
+      const commentIndex = post.comments.findIndex(c => c.commentId === commentId);
+      if (commentIndex === -1) {
+          console.log('Comment not found for commentId:', commentId);
+          return res.status(404).json({ message: 'Comment not found' });
+      }
+
+      const comment = post.comments[commentIndex];
+
+      
+      if (comment.userId.toString() !== userId && post.authorId.toString() !== userId) {
+          return res.status(403).json({ message: 'You do not have permission to delete this comment' });
+      }
+
+      // Remove the comment from the post
+      post.comments.splice(commentIndex, 1); //remove the comment at the found index
+      await post.save();
+      return res.status(200).json({ message: 'Comment deleted successfully' });
+
+  } catch (error) {
+      console.error('Error during comment deletion:', error.message);
+      res.status(500).json({ message: 'Server error: ' + error.message });
   }
 };
 
@@ -358,4 +505,6 @@ module.exports = {
   addComment,
   likeComment,
   addReply,
+  editComment,
+  deleteComment
 };

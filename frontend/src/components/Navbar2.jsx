@@ -10,8 +10,12 @@ const Navbar2 = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
+    // Check if the section requires API calls
+    if (activeSection !== "Friends" && activeSection !== "Pending Friend Request") {
+      return; // Skip fetching for other sections
+    }
 
+    const userId = localStorage.getItem("userId");
     if (!userId) {
       setError("User is not logged in.");
       setLoading(false);
@@ -53,37 +57,50 @@ const Navbar2 = () => {
     if (loading) return <div style={contentStyle}>Loading {activeSection.toLowerCase()}...</div>;
     if (error) return <div style={contentStyle}>{error}</div>;
 
-    const contentList =
-      activeSection === "Friends" ? friends : pendingRequests;
-    const title =
-      activeSection === "Friends" ? "Your Friends:" : "Pending Friend Requests:";
-    const noDataMessage =
-      activeSection === "Friends" ? "You have no friends." : "No pending friend requests.";
+    if (activeSection === "Friends" || activeSection === "Pending Friend Request") {
+      const contentList =
+        activeSection === "Friends" ? friends : pendingRequests;
+      const title =
+        activeSection === "Friends" ? "Your Friends:" : "Pending Friend Requests:";
+      const noDataMessage =
+        activeSection === "Friends" ? "You have no friends." : "No pending friend requests.";
 
-    return (
-      <div style={contentStyle}>
-        <h3 style={{ fontSize: "20px", color: "#333" }}>{title}</h3>
-        {contentList.length > 0 ? (
-          <ul style={{ paddingLeft: "20px" }}>
-            {contentList.map((item) => (
-              <li key={item._id} style={{ fontSize: "16px", color: "#333" }}>
-                {activeSection === "Friends" ? (
-                  <>
-                    {item.username} - {item.email}
-                  </>
-                ) : (
-                  <>
-                    {item.fromUser.username} - {item.fromUser.email}
-                  </>
-                )}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div style={{ color: "#333" }}>{noDataMessage}</div>
-        )}
-      </div>
-    );
+      const filteredContentList = contentList.filter((item) => {
+        if (activeSection === "Friends") {
+          return item.username && item.email;
+        } else {
+          return item.fromUser && item.fromUser.username && item.fromUser.email;
+        }
+      });
+
+      return (
+        <div style={contentStyle}>
+          <h3 style={{ fontSize: "20px", color: "#333" }}>{title}</h3>
+          {filteredContentList.length > 0 ? (
+            <ul style={{ paddingLeft: "20px" }}>
+              {filteredContentList.map((item) => (
+                <li key={item._id} style={{ fontSize: "16px", color: "#333" }}>
+                  {activeSection === "Friends" ? (
+                    <>
+                      {item.username} - {item.email}
+                    </>
+                  ) : (
+                    <>
+                      {item.fromUser.username} - {item.fromUser.email}
+                    </>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div style={{ color: "#333" }}>{noDataMessage}</div>
+          )}
+        </div>
+      );
+    }
+
+    // For other sections
+    return <div style={contentStyle}>Content for {activeSection} is not available yet.</div>;
   };
 
   return (

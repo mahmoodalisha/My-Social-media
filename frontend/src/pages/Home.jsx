@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaHeart } from 'react-icons/fa'; 
+import { FaHeart, FaPen, FaTrashAlt } from 'react-icons/fa';
 import "../styles/Home.css";
 
 const Home = () => {
@@ -108,7 +108,7 @@ const Home = () => {
             console.log('Comment added:', response.data);
             setComment(""); // Clear the comment input after adding
 
-            // Update comments locally for the specific post
+            // Update comments locally for the specific post Instead of fetching all comments each time a comment is added, locally update the comments for that post right after adding one. This avoids unnecessary API calls and makes the comment section feel more responsive.
             setComments((prevComments) => ({
                 ...prevComments,
                 [postId]: [...(prevComments[postId] || []), response.data.comment],
@@ -138,7 +138,7 @@ const Home = () => {
             // Toggle visibility of comments
             setVisibleComments((prevVisible) => ({
                 ...prevVisible,
-                [postId]: !prevVisible[postId] // If already visible, hide; if hidden, show
+                [postId]: !prevVisible[postId] 
             }));
         } catch (error) {
             console.error('Error fetching comments:', error.response ? error.response.data : error.message);
@@ -149,6 +149,7 @@ const Home = () => {
         const storedUserId = localStorage.getItem('userId');
         if (storedUserId) {
             setUserId(storedUserId);
+            console.log('userId from localStorage:', storedUserId);
         }
     }, []);
 
@@ -167,82 +168,252 @@ const Home = () => {
         }
     };
 
-    return (
-        <div className="home">
-            <h1>Instagram</h1>
-            {loading && <p>Loading...</p>}
-            {posts.map((post) => {
-                const userLikesPost = post.likes ? post.likes.includes(userId) : false;
-                return (
-                    <div key={post._id} className="post">
-                        <div className="post-user">
-                            <h3>{post.user.username}</h3>
-                            {post.user.media && post.user.media.url && (
-                                <img src={post.user.media.url} alt={post.user.username} />
-                            )}
-                        </div>
-                        <div className="post-content">
-                            <p>{post.content}</p>
-                            {post.media && post.media.url && (
-                                post.media.type === 'photo' ? (
-                                    <img src={`http://localhost:5000/${post.media.url}`} alt="Post media" className="post-media" />
-                                ) : (
-                                    <video controls className="post-media">
-                                        <source src={`http://localhost:5000/${post.media.url}`} type="video/mp4" />
-                                        Your browser does not support the video tag.
-                                    </video>
-                                )
-                            )}
-                        </div>
-                        <div className="post-actions">
-                            <button onClick={() => toggleLike(post._id)} className="like-button">
-                                <FaHeart
-                                    color={userLikesPost ? 'red' : 'grey'} // Change color based on like status
-                                    size={24}
-                                />
-                            </button>
-                            <span style={{ color: "#333" }}>
-                                {post.likesCount || 0} {post.likesCount === 1 ? 'like' : 'likes'}
-                                </span>
 
 
-                            {/* Comment Button */}
-                            <button onClick={() => setShowCommentInput((prev) => !prev)} className="comment-button">
-                                {showCommentInput ? 'Cancel' : 'Add Comment'}
-                            </button>
+    const handleEditComment = async (postId, commentId) => {
+        // Prompt the user to enter new content for the comment
+        const newContent = prompt("Enter the new content for your comment:");
+        if (!newContent) return; // Exit if no new content is entered
+    
+        try {
+            // Retrieve userId from local storage
+            const userId = localStorage.getItem("userId");
+    
+            if (!userId) {
+                console.error("User ID not found in local storage.");
+                return;
+            }
+    
+            // Send the request to edit the comment
+            const response = await axios.put(
+                `http://localhost:5000/api/posts/comments/edit`,
+                {
+                    postId,
+                    userId,
+                    commentId,
+                    newContent,
+                },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+    
+            if (response.status === 200) {
+                console.log(response.data.message);
+                // Update the comments in frontend
+                loadComments(postId); // loadComments refreshes the comments for the post
+            } else {
+                console.error("Failed to edit the comment:", response.data.message);
+            }
+        } catch (error) {
+            console.error("Error editing comment:", error);
+        }
+    };
+    
 
-                            {/* Comment Input Field */}
-                            {showCommentInput && (
-                                <div className="comment-input">
-                                    <input
-                                        type="text"
-                                        value={comment}
-                                        onChange={(e) => setComment(e.target.value)}
-                                        placeholder="Type your comment..."
-                                    />
-                                    <button onClick={() => addComment(post._id)}>Submit</button>
-                                </div>
-                            )}
-                            {/* Show/Hide Comments Button */}
-                            <button onClick={() => loadComments(post._id)} className="show-comments-button">
-                                {visibleComments[post._id] ? 'Hide Comments' : 'Show Comments'}
-                            </button>
 
-                            {/* Display Comments */}
-                            {visibleComments[post._id] && comments[post._id] && Array.isArray(comments[post._id]) && comments[post._id].map((comment) => (
-                                <div key={comment.commentId} className="comment">
-                                    <p><strong>{comment.username}</strong>: {comment.content}</p>
-                                </div>
-                            ))}
-                        </div>
+    
+    const handleDeleteComment = async (postId, commentId) => {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+
+    if (!token || !userId) {
+        console.error("Token or userId is missing, user is not authenticated");
+        return;
+    }
+
+    // Convert postId and commentId to strings
+    postId = String(postId);
+    commentId = String(commentId);
+
+    try {
+        console.log('Post ID being sent:', postId);
+        console.log('Comment ID being sent:', commentId);
+        console.log('User ID being sent:', userId);
+
+        const response = await axios.delete(`http://localhost:5000/api/posts/comments/delete`, {
+            data: { postId, userId, commentId },
+            
+        });
+
+        console.log("Comment deleted:", response.data);
+        // Update state to remove the deleted comment
+        setComments((prevComments) => ({
+            ...prevComments,
+            [postId]: prevComments[postId].filter((comment) => comment.commentId !== commentId)
+        }));
+    } catch (error) {
+        console.error('Error deleting comment:', error);
+    }
+};
+
+
+
+const handleAddReply = async (postId, commentId) => {
+    const replyContent = prompt("Enter your reply:");
+    if (!replyContent) return; // Exit if no content is entered
+
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+
+    if (!token || !userId) {
+        console.error("Token or userId is missing, user is not authenticated");
+        return;
+    }
+
+    
+    postId = String(postId).trim();
+    commentId = String(commentId).trim();
+
+    try {
+        console.log("Post ID being sent:", postId);
+        console.log("Comment ID being sent:", commentId);
+        console.log("User ID being sent:", userId);
+
+        const response = await axios.post(
+            `http://localhost:5000/api/posts/comments/replies`,
+            {
+                postId,
+                commentId,
+                userId,
+                content: replyContent,
+            },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        console.log("Reply added successfully:", response.data);
+        // Update state to include the new reply
+        setComments((prevComments) => ({
+            ...prevComments,
+            [postId]: prevComments[postId].map((comment) =>
+                comment.commentId === commentId
+                    ? { ...comment, replies: response.data.replies }
+                    : comment
+            ),
+        }));
+    } catch (error) {
+        console.error("Error adding reply:", error.response ? error.response.data : error.message);
+    }
+};
+
+
+
+
+    
+return (
+    <div className="home">
+        <h1>Instagram</h1>
+        {loading && <p>Loading...</p>}
+        {posts.map((post) => {
+            const userLikesPost = post.likes ? post.likes.includes(userId) : false;
+            return (
+                <div key={post._id} className="post">
+                    <div className="post-user">
+                        <h3>{post.user.username}</h3>
+                        {post.user.media && post.user.media.url && (
+                            <img src={post.user.media.url} alt={post.user.username} />
+                        )}
                     </div>
-                );
-            })}
-            {hasMorePosts && (
-                <button onClick={loadMorePosts} className="load-more">Load More</button>
-            )}
-        </div>
-    );
+                    <div className="post-content">
+                        <p>{post.content}</p>
+                        {post.media && post.media.url && (
+                            post.media.type === 'photo' ? (
+                                <img src={`http://localhost:5000/${post.media.url}`} alt="Post media" className="post-media" />
+                            ) : (
+                                <video controls className="post-media">
+                                    <source src={`http://localhost:5000/${post.media.url}`} type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                </video>
+                            )
+                        )}
+                    </div>
+                    <div className="post-actions">
+                        <button onClick={() => toggleLike(post._id)} className="like-button">
+                            <FaHeart
+                                color={userLikesPost ? 'red' : 'grey'}
+                                size={24}
+                            />
+                        </button>
+                        <span style={{ color: "#333" }}>
+                            {post.likesCount || 0} {post.likesCount === 1 ? 'like' : 'likes'}
+                        </span>
+
+                        {/* Comment Button */}
+                        <button onClick={() => setShowCommentInput((prev) => !prev)} className="comment-button">
+                            {showCommentInput ? 'Cancel' : 'Add Comment'}
+                        </button>
+
+                        {/* Comment Input Field */}
+                        {showCommentInput && (
+                            <div className="comment-input">
+                                <input
+                                    type="text"
+                                    value={comment}
+                                    onChange={(e) => setComment(e.target.value)}
+                                    placeholder="Type your comment..."
+                                />
+                                <button onClick={() => addComment(post._id)}>Submit</button>
+                            </div>
+                        )}
+
+                        {/* Show/Hide Comments Button */}
+                        <button onClick={() => loadComments(post._id)} className="show-comments-button">
+                            {visibleComments[post._id] ? 'Hide Comments' : 'Show Comments'}
+                        </button>
+
+                        {/* Display Comments */}
+                        {visibleComments[post._id] && comments[post._id] && Array.isArray(comments[post._id]) && comments[post._id].map((comment) => (
+                            <div key={comment.commentId} className="comment">
+                                <p style={{ fontSize: '17px', color: '#333' }}>
+                                    <strong>{comment.username}</strong>: {comment.content}
+                                </p>
+
+                                {/* Replies Section */}
+                                {comment.replies && comment.replies.map((reply) => (
+                                    <div key={reply.replyId} className="reply">
+                                        <p style={{ fontSize: '15px', color: '#555', marginLeft: '20px' }}>
+                                        <strong>{reply.username}</strong>: {reply.content}
+                                        </p>
+                                    </div>
+                                ))}
+
+                                {/* Add Reply Button */}
+                                <button onClick={() => handleAddReply(post._id, comment.commentId)} className="reply-button">
+                                    Reply
+                                </button>
+
+                                {/* Show edit button (pen icon) only for the commenter */}
+                                {comment.userId === userId && (
+                                    <button onClick={() => handleEditComment(post._id, comment.commentId)} className="edit-comment-button">
+                                        <FaPen size={20} color="#007bff" />
+                                    </button>
+                                )}
+
+                                {/* Show delete button (trash icon) for both commenter and post owner */}
+                                {(comment.userId === userId || post.userId === userId) && (
+                                    <button onClick={() => handleDeleteComment(post._id, comment.commentId)} className="delete-comment-button">
+                                        <FaTrashAlt size={20} color="red" />
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        })}
+        {hasMorePosts && (
+            <button onClick={loadMorePosts} className="load-more">Load More</button>
+        )}
+    </div>
+);
+
 };
 
 export default Home;

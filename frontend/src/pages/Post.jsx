@@ -9,7 +9,7 @@ const Post = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const id = localStorage.getItem('userId'); // Get userId from localStorage
+        const id = localStorage.getItem('userId');
         setUserId(id); 
     }, []);
 

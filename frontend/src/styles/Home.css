@@ -166,3 +166,21 @@ button:disabled {
   text-decoration: underline;
   font-size: 1.3rem; /* Larger font size */
 }
+.edit-comment-button,
+.delete-comment-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+.edit-comment-button i,
+.delete-comment-button i {
+    font-size: 18px;
+    color: #555;
+}
+
+.edit-comment-button:hover i,
+.delete-comment-button:hover i {
+    color: #007bff;
+}

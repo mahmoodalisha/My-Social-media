@@ -1,4 +1,3 @@
-// controllers/userController.js
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
@@ -8,7 +7,7 @@ const multer = require('multer');
 const sharp = require('sharp');
 const fs = require('fs');
 
-// Configure the multer storage
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = 'uploads/profile-pictures';
@@ -23,10 +22,10 @@ const storage = multer.diskStorage({
   }
 });
 
-// Initialize multer
+
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5 MB
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.startsWith('image')) {
       return cb(new Error('Only image files are allowed!'), false);
@@ -36,7 +35,7 @@ const upload = multer({
 });
 
 const generateToken = (userId) => {
-  return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET);
 };
 
 
@@ -79,13 +78,13 @@ const searchUsers = async (req, res) => {
   }
 
   try {
-      // Find users whose username or email matches the search term (case insensitive)
+      // Find users whose username or email matches the search term
       const users = await User.find({
           $or: [
               { username: { $regex: searchTerm, $options: 'i' } },
               { email: { $regex: searchTerm, $options: 'i' } }
           ]
-      }).select('username email'); // Select only username and email to avoid sending sensitive data
+      }).select('username email');
 
       if (users.length === 0) {
           return res.status(404).json({ message: 'No users found' });
@@ -114,13 +113,13 @@ const getUserById = async (req, res) => {
 
 
 const uploadProfilePicture = async (req, res) => {
-  console.log(req.file); // Log to check the file object being uploaded
+  console.log(req.file);
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded' });
   }
 
   const filePath = req.file.path;
-  const userId = req.user.id; // user ID is in the request object (from authentication)
+  const userId = req.user.id;
 
   try {
     // Resize the uploaded image to multiple sizes
@@ -149,7 +148,7 @@ const uploadProfilePicture = async (req, res) => {
  
 
 const deleteProfilePicture = async (req, res) => {
-  const userId = req.user.id; //user ID is in the request object (from authentication)
+  const userId = req.user.id;
 
   try {
     const user = await User.findById(userId);
@@ -180,7 +179,7 @@ const deleteProfilePicture = async (req, res) => {
 
 const getProfilePicture = async (req, res) => {
   try {
-    const user = await User.findById(req.params.userId); // Use req.params.userId instead of req.user.id
+    const user = await User.findById(req.params.userId); 
 
     if (!user) {
       return res.status(404).json({ message: "User not found", userId: req.params.userId });

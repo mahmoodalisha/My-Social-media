@@ -1,4 +1,3 @@
-//routes/userRoutes
 const express = require('express');
 const router = express.Router();
 const { registerUser, loginUser, searchUsers, getUserById, uploadProfilePicture, deleteProfilePicture, getProfilePicture } = require('../controllers/userController');
@@ -28,7 +27,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5 MB
+  limits: { fileSize: 5 * 1024 * 1024 }, // file size 5 MB
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.startsWith('image')) {
       return cb(new Error('Only image files are allowed!'), false);

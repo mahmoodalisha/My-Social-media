@@ -188,3 +188,12 @@ POST http://localhost:5000/api/posts/comments/like
   "commentId": "c4552f4f-5368-445a-b825-3a6c6202e37b", // The ID of the comment to like
   "userId": "6720914b0eaec1cffd1ec936" // The ID of the user liking the comment
 }
+
+
+http://localhost:5000/api/posts/comments/replies
+request {
+  "postId": "<Post ID>",       // Replace with the ID of the post
+  "commentId": "<Comment ID>", // Replace with the ID of the comment
+  "userId": "<User ID>",       // Replace with the ID of the user replying
+  "content": "This is a reply" // Replace with your reply content
+}

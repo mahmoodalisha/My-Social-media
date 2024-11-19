@@ -45,7 +45,7 @@ const Navbar = () => {
         );
 
         if (userResponse.data.username) {
-          setUsername(userResponse.data.username); // Set the username state
+          setUsername(userResponse.data.username); 
         }
       } catch (error) {
         console.error("Error fetching user data:", error);

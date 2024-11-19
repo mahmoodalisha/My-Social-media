@@ -1,4 +1,3 @@
-// models/FriendRequests.js
 const mongoose = require('mongoose');
 const friendRequestsSchema = new mongoose.Schema({
   fromUser: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },

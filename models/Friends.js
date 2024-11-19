@@ -1,4 +1,3 @@
-// models/Friends.js
 const mongoose = require('mongoose');
 const friendsSchema = new mongoose.Schema({
   user1: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },

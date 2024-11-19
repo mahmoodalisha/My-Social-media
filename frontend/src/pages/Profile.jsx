@@ -59,7 +59,7 @@ const Profile = () => {
     setSelectedFile(e.target.files[0]);
   };
 
-  // Handle file upload
+  
   const handleUpload = async () => {
     if (!selectedFile) {
       alert("Please select a file to upload");
@@ -91,7 +91,7 @@ const Profile = () => {
     }
   };
 
-  // Handle profile picture deletion
+  
   const handleDeleteProfilePicture = async () => {
     try {
       await axios.delete("http://localhost:5000/api/profile/delete-profile-picture", {
