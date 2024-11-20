@@ -4,9 +4,9 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: black; /* Black background */
+    background-color: black; 
     font-family: Arial, sans-serif;
-    color: white; /* White text to contrast with the black background */
+    color: white; 
 }
 
 /* Style the form */
@@ -15,7 +15,7 @@
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    width: 400px;
+    width: 200px;
     text-align: center;
 }
 

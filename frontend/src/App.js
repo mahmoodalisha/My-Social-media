@@ -4,6 +4,8 @@ import { Provider } from "react-redux"; // Redux Provider
 import { AuthProvider } from "./context/AuthContext"; // Auth Context Provider
 import store from "./redux/store"; // Redux store
 import Login from "./components/Login";
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
 import Register from "./components/Register";
 import Home from "./pages/Home";
 import Post from "./pages/Post";
@@ -23,6 +25,8 @@ const App = () => {
               {/* Public Routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
 
               {/* Protected Routes */}
               <Route 

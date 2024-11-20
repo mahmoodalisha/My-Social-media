@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import '../styles/Profile.css';
-import Navbar2 from '../components/Navbar2';
+import Activities from '../components/Activities';
 
 const Profile = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -146,7 +146,7 @@ const Profile = () => {
         )}
       </div>
     </div>
-    <Navbar2 />
+    <Activities />
     </div>
   );  
 };

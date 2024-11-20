@@ -1,16 +1,13 @@
-body {
-    background-color: #ffffff; 
-    color: #333; 
-}
-
 .login-container {
     max-width: 500px;
-    margin: 10px auto;
-    padding: 20px; /* Increased padding for better spacing */
-    background-color: #f9f9f9; /* Light background for better contrast */
+    margin: 50px auto; /* Consistent spacing with register container */
+    padding: 3px; /* Matches the register container padding */
+    background-color: #f9f9f9; /* Same light background for consistency */
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     color: #333;
+    width: auto; /* Ensure container width is adjusted based on content */
+    height: auto;
 }
 
 .card {
@@ -18,46 +15,51 @@ body {
     background-color: #f9f9f9; 
     color: #333; 
     border: none;
+    padding: 5px;
 }
 
 h2 {
-    color: #222222; /* Slightly dark color */
+    color: #222222; /* Matches the register heading color */
     font-weight: bold;
-    margin-bottom: 30px; /* Adds space between the heading and form */
-    font-size: 2rem; /* Adjust size if needed */
+    margin-bottom: 10px; /* Consistent margin with register heading */
+    font-size: 2rem; /* Similar size for better legibility */
     text-align: center;
 }
 
 .form-control {
-    width: 100%; /* Ensure it takes full width */
-    max-width: 100%;
+    width: 100%; /* Uniform full width */
+    padding: 8px; /* Consistent padding with register inputs */
     box-sizing: border-box;
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #f0f0f0;
     color: #333;
-    font-size: 1.1rem; /* Adjust font size for better legibility */
+    font-size: 1.1rem; /* Adjust font size to match design intent */
 }
 
 .form-control:focus {
     background-color: #e6e6e6;
-    border-color: #333; 
+    border-color: #8b0c0c; /* Matches register focus style */
+    outline: none;
     box-shadow: none;
 }
 
 .form-label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 3px; /* Align with register label styling */
     font-weight: bold;
     font-size: 1.1rem; 
+    color: #333;
 }
 
 .btn-primary {
     background-color: #333; 
     border-color: #333;
-    padding: 10px 20px;
+    padding: 8px; /* Same as the register submit button */
     font-size: 1.1rem;
     width: 100%;
+    border-radius: 5px;
+    color: #fff;
 }
 
 .btn-primary:hover {
@@ -67,6 +69,7 @@ h2 {
 
 a {
     color: #e60000;
+    text-decoration: none;
 }
 
 a:hover {

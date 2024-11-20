@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/Navbar2.css";
 
-const Navbar2 = () => {
+const Activities = () => {
   const [activeSection, setActiveSection] = useState("Friends");
   const [friends, setFriends] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
@@ -122,4 +122,4 @@ const Navbar2 = () => {
   );
 };
 
-export default Navbar2;
+export default Activities;
