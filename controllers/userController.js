@@ -6,6 +6,8 @@ const path = require('path');
 const multer = require('multer');
 const sharp = require('sharp');
 const fs = require('fs');
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 
 
 const storage = multer.diskStorage({
@@ -206,5 +208,80 @@ const getProfilePicture = async (req, res) => {
   }
 };
 
+// Forgot Password - Send Email with Reset Link
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
 
-module.exports = { registerUser, loginUser, searchUsers, getUserById, uploadProfilePicture, deleteProfilePicture, getProfilePicture };
+  try {
+    // Find the user with the provided email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour expiration
+    await user.save();
+
+    // Configure Nodemailer transporter
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER, // The sender's email address (from .env file)
+        pass: process.env.EMAIL_PASS, // The sender's email password (from .env file)
+      },
+    });
+
+    // Compose email content
+    const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
+    const mailOptions = {
+      to: user.email,
+      from: process.env.EMAIL_USER,
+      subject: 'Password Reset Request',
+      text: `You are receiving this email because you requested a password reset. Click the link to reset your password: ${resetUrl}`,
+    };
+
+    // Send the email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return res.status(500).json({ message: "Error sending email." });
+      }
+      res.status(200).json({ message: "Password reset email sent." });
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Server error." });
+  }
+};
+
+// Reset Password - Update the user's password
+const resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    const user = await User.findOne({ 
+      resetPasswordToken: token, 
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired token." });
+    }
+
+    // Hash the new password
+    user.password = await bcrypt.hash(newPassword, 10);
+    user.resetPasswordToken = undefined; // Clear reset token
+    user.resetPasswordExpires = undefined; // Clear expiration date
+    await user.save();
+
+    res.status(200).json({ message: "Password successfully updated." });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Server error." });
+  }
+};
+
+
+module.exports = { registerUser, loginUser, searchUsers, getUserById, uploadProfilePicture, deleteProfilePicture, getProfilePicture, forgotPassword, resetPassword };

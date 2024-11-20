@@ -87,7 +87,7 @@ const Profile = () => {
       }
     } catch (error) {
       console.error("Error uploading profile picture:", error);
-      alert("Error uploading profile picture");
+      alert("You can only upload png or jpf type of files");
     }
   };
 

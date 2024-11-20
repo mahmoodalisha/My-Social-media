@@ -224,7 +224,7 @@ const Home = () => {
         return;
     }
 
-    // Convert postId and commentId to strings
+    
     postId = String(postId);
     commentId = String(commentId);
 

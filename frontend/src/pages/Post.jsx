@@ -19,34 +19,42 @@ const Post = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        console.log("User ID:", userId); 
+    
         const token = localStorage.getItem('token');
-        console.log("Token being sent:", token); 
         const formData = new FormData();
         formData.append('userId', userId);
         formData.append('content', content);
-
+    
         if (media) {
-            formData.append('mediaFile', media);
+            formData.append('profilePicture', media); // Ensure correct field name matches backend
         }
-
+    
         try {
-            const response = await axios.post('http://localhost:5000/api/posts', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-            console.log('Post created:', response.data);
+            const response = await axios.post(
+                'http://localhost:5000/api/users/upload-profile-picture',
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                }
+            );
+            console.log('Profile picture uploaded:', response.data);
+            alert('Profile picture uploaded successfully!'); // Success message
             setContent('');
             setMedia(null);
             setError(null);
         } catch (error) {
-            console.error('Error creating post:', error.response ? error.response.data : error.message);
-            setError('Failed to create post. Please try again.'); 
+            if (error.response && error.response.data.message) {
+                alert(error.response.data.message); // Display backend error message
+            } else {
+                alert('You can only upload jpg or png type of file');
+            }
+            setError('Failed to upload profile picture. Please try again.');
         }
     };
+    
 
     return (
         <div className="post-container">

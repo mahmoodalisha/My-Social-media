@@ -6,7 +6,7 @@ const multer = require('multer');
 const path = require('path');
 
 
-
+//uploading a file is a common function, make a new file where all the uploads operation will be done
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/'); 
@@ -18,7 +18,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-
+//endpoints need to be corrected and shortened
 router.post('/posts', authMiddleware, upload.single('mediaFile'), createPost);
 router.get('/posts', authMiddleware, getPosts);
 router.post('/posts/like', authMiddleware, likePost);

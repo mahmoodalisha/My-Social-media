@@ -1,16 +1,17 @@
-
 body {
     background-color: #ffffff; 
     color: #333; 
 }
 
-
-.login-container, .register-container {
-    max-width: 800px;
-    margin-top: 50px;
-    min-height: 600px;
+.login-container {
+    max-width: 500px;
+    margin: 10px auto;
+    padding: 20px; /* Increased padding for better spacing */
+    background-color: #f9f9f9; /* Light background for better contrast */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: #333;
 }
-
 
 .card {
     border-radius: 10px;
@@ -19,26 +20,30 @@ body {
     border: none;
 }
 
-
 h2 {
-    color: #222222 !important; 
+    color: #222222; /* Slightly dark color */
     font-weight: bold;
+    margin-bottom: 30px; /* Adds space between the heading and form */
+    font-size: 2rem; /* Adjust size if needed */
+    text-align: center;
 }
 
-
 .form-control {
-    background-color: #f0f0f0; 
-    color: #333; 
-    border: 1px solid #ddd; 
-    margin: 0;
+    width: 100%; /* Ensure it takes full width */
+    max-width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    color: #333;
+    font-size: 1.1rem; /* Adjust font size for better legibility */
 }
 
 .form-control:focus {
-    background-color: #e6e6e6; 
+    background-color: #e6e6e6;
     border-color: #333; 
     box-shadow: none;
 }
-
 
 .form-label {
     display: block;
@@ -47,11 +52,12 @@ h2 {
     font-size: 1.1rem; 
 }
 
-
-
 .btn-primary {
     background-color: #333; 
     border-color: #333;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    width: 100%;
 }
 
 .btn-primary:hover {
@@ -67,44 +73,11 @@ a:hover {
     color: #ff4d4d;
 }
 
-.button-container {
-    display: flex;
-    justify-content: center;
-}
-
-.search-results {
-    position: absolute;
-    top: 3.5rem;
-    left: 2rem;
-    width: 300px;
-    max-height: 300px;
-    overflow-y: auto;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-}
-
-.search-results p {
-    margin: 0;
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid #ddd;
-    cursor: pointer;
-    color: #333;
-}
-
-.search-results p:hover {
-    background-color: #f1f1f1;
-}
-
-
 .text-center.mt-3 {
     font-size: 1.2rem; 
     text-align: center; 
     margin-top: 1rem; 
 }
-
 
 .text-center.mt-3 a {
     color: #333; 
