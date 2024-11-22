@@ -18,7 +18,7 @@ const Profile = () => {
           return;
         }
 
-        // Fetch profile picture
+        
         const pictureResponse = await axios.get(
           `http://localhost:5000/api/users/${userId}/get-profile-picture`,
           {
@@ -27,6 +27,7 @@ const Profile = () => {
             },
           }
         );
+        console.log("Profile Picture Response:", pictureResponse.data);
 
         if (pictureResponse.data.profilePicture) {
           setProfilePicture(pictureResponse.data.profilePicture);
@@ -41,6 +42,7 @@ const Profile = () => {
             },
           }
         );
+        console.log("User Details Response:", userResponse.data);
 
         if (userResponse.data) {
           setUsername(userResponse.data.username);
@@ -54,7 +56,7 @@ const Profile = () => {
     fetchProfileData();
   }, []);
 
-  // Handle file selection
+  
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
@@ -111,44 +113,51 @@ const Profile = () => {
 
   return (
     <div>
-    <div className="profile-container">
-    <h2 style={{ color: "#333" }}>Your Profile</h2>
-
-    {/* Display user information */}
-    <div className="user-info">
-    <p style={{ color: "#333" }}><strong>Username:</strong> {username}</p>
-    <p style={{ color: "#333" }}><strong>Email:</strong> {email}</p>
-    </div>
-
+      <div className="profile-container">
   
-      {/* Display the current profile picture */}
-      {profilePicture && (
-        <div className="profile-picture">
-          <img
-            src={`http://localhost:5000/${profilePicture}`}
-            alt="Profile"
-            className="profile-picture-img"
-          />
-        </div>
-      )}
-  
-      {/* File input and buttons */}
-      <input type="file" onChange={handleFileChange} />
-      
-      <div className="button-group">
-        <button onClick={handleUpload} className="upload-button">
-          Upload Profile Picture
-        </button>
-        {profilePicture && (
-          <button onClick={handleDeleteProfilePicture} className="delete-button">
-            Delete Profile Picture
-          </button>
-        )}
+  <div className="profile-picture">
+    {profilePicture ? (
+      <img
+        src={`http://localhost:5000/${profilePicture}`}
+        alt="Profile"
+        className="profile-picture-img"
+      />
+    ) : (
+      <div className="placeholder-picture">
+        <p>No Picture</p>
       </div>
+    )}
+  </div>
+
+  
+  <div className="user-info">
+    <h3>{username}</h3>
+    <p>
+      <strong>Username:</strong> {username}
+    </p>
+    <p>
+      <strong>Email:</strong> {email}
+    </p>
+  
+          
+          <input type="file" onChange={handleFileChange} />
+  
+          <div className="button-group">
+            <button onClick={handleUpload} className="upload-button">
+              Upload Profile Picture
+            </button>
+            {profilePicture && (
+              <button onClick={handleDeleteProfilePicture} className="delete-button">
+                Delete Profile Picture
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+      <Activities />
     </div>
-    <Activities />
-    </div>
-  );  
+  );
+    
 };
 
 export default Profile;

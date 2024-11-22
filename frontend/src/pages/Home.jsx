@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaHeart, FaPen, FaTrashAlt } from 'react-icons/fa';
+import { RiWechatLine } from "react-icons/ri";
 import "../styles/Home.css";
 
 const Home = () => {
@@ -14,6 +15,8 @@ const Home = () => {
     const [comments, setComments] = useState({}); 
     const [visibleComments, setVisibleComments] = useState({}); // visibility of comments for each post
     const limit = 10; 
+
+
 
     const fetchPosts = async () => {
         const token = localStorage.getItem('token');
@@ -106,7 +109,7 @@ const Home = () => {
             );
 
             console.log('Comment added:', response.data);
-            setComment(""); // Clear the comment input after adding
+            setComment(""); 
 
             // Update comments locally for the specific post Instead of fetching all comments each time a comment is added, locally update the comments for that post right after adding one. This avoids unnecessary API calls and makes the comment section feel more responsive.
             setComments((prevComments) => ({
@@ -171,12 +174,12 @@ const Home = () => {
 
 
     const handleEditComment = async (postId, commentId) => {
-        // Prompt the user to enter new content for the comment
+        
         const newContent = prompt("Enter the new content for your comment:");
-        if (!newContent) return; // Exit if no new content is entered
+        if (!newContent) return; 
     
         try {
-            // Retrieve userId from local storage
+            
             const userId = localStorage.getItem("userId");
     
             if (!userId) {
@@ -184,7 +187,7 @@ const Home = () => {
                 return;
             }
     
-            // Send the request to edit the comment
+            
             const response = await axios.put(
                 `http://localhost:5000/api/posts/comments/edit`,
                 {
@@ -202,7 +205,7 @@ const Home = () => {
     
             if (response.status === 200) {
                 console.log(response.data.message);
-                // Update the comments in frontend
+                
                 loadComments(postId); // loadComments refreshes the comments for the post
             } else {
                 console.error("Failed to edit the comment:", response.data.message);
@@ -307,6 +310,7 @@ const handleAddReply = async (postId, commentId) => {
 
 
     
+    
 return (
     <div className="home">
         <h1>Instagram</h1>
@@ -316,10 +320,16 @@ return (
             return (
                 <div key={post._id} className="post">
                     <div className="post-user">
-                        <h3>{post.user.username}</h3>
-                        {post.user.media && post.user.media.url && (
-                            <img src={post.user.media.url} alt={post.user.username} />
-                        )}
+                        <div className="post-user-info">
+                            {post.user.profilePicture && (
+                                <img 
+                                    src={`http://localhost:5000/${post.user.profilePicture}`} 
+                                    alt={post.user.username} 
+                                    className="profile-picture" 
+                                />
+                            )}
+                            <h3>{post.user.username}</h3>
+                        </div>
                     </div>
                     <div className="post-content">
                         <p>{post.content}</p>
@@ -335,22 +345,20 @@ return (
                         )}
                     </div>
                     <div className="post-actions">
-                        <button onClick={() => toggleLike(post._id)} className="like-button">
-                            <FaHeart
-                                color={userLikesPost ? 'red' : 'grey'}
-                                size={24}
-                            />
-                        </button>
-                        <span style={{ color: "#333" }}>
-                            {post.likesCount || 0} {post.likesCount === 1 ? 'like' : 'likes'}
-                        </span>
+                        <div className="action-button">
+                            <button onClick={() => toggleLike(post._id)} className="like-button">
+                                <FaHeart color={userLikesPost ? 'red' : 'grey'} size={24} />
+                            </button>
+                            <span style={{ color: "#333" }}>
+                                {post.likesCount || 0} {post.likesCount === 1 ? 'like' : 'likes'}
+                            </span>
 
-                        {/* Comment Button */}
-                        <button onClick={() => setShowCommentInput((prev) => !prev)} className="comment-button">
-                            {showCommentInput ? 'Cancel' : 'Add Comment'}
-                        </button>
+                            <button onClick={() => setShowCommentInput((prev) => !prev)} className="comment-button">
+                                <RiWechatLine size={30} className="comment-icon" />
+                                {showCommentInput ? 'Cancel' : 'Add Comment'}
+                            </button>
+                        </div>
 
-                        {/* Comment Input Field */}
                         {showCommentInput && (
                             <div className="comment-input">
                                 <input
@@ -363,45 +371,64 @@ return (
                             </div>
                         )}
 
-                        {/* Show/Hide Comments Button */}
                         <button onClick={() => loadComments(post._id)} className="show-comments-button">
                             {visibleComments[post._id] ? 'Hide Comments' : 'Show Comments'}
                         </button>
 
-                        {/* Display Comments */}
                         {visibleComments[post._id] && comments[post._id] && Array.isArray(comments[post._id]) && comments[post._id].map((comment) => (
                             <div key={comment.commentId} className="comment">
-                                <p style={{ fontSize: '17px', color: '#333' }}>
-                                    <strong>{comment.username}</strong>: {comment.content}
-                                </p>
+                                <div className="comment-content">
+                                    <div className="comment-header">
+                                        {comment.profilePicture ? (
+                                            <img 
+                                                src={`http://localhost:5000/${comment.profilePicture}`} 
+                                                alt={`${comment.username}'s profile`} 
+                                                className="profile-picture"
+                                            />
+                                        ) : (
+                                            <div className="profile-placeholder">?</div> 
+                                        )}
+                                        <strong>{comment.username}</strong>: {comment.content}
 
-                                {/* Replies Section */}
-                                {comment.replies && comment.replies.map((reply) => (
-                                    <div key={reply.replyId} className="reply">
-                                        <p style={{ fontSize: '15px', color: '#555', marginLeft: '20px' }}>
-                                        <strong>{reply.username}</strong>: {reply.content}
-                                        </p>
+
                                     </div>
-                                ))}
 
-                                {/* Add Reply Button */}
+                                    {comment.userId === userId && (
+                                        <button 
+                                            onClick={() => handleEditComment(post._id, comment.commentId)} 
+                                            className="edit-comment-button" 
+                                            style={{ marginRight: '2px' }}
+                                        >
+                                            <FaPen size={15} color="#007bff" />
+                                        </button>
+                                    )}
+
+                                    {(comment.userId === userId || post.userId === userId) && (
+                                        <button onClick={() => handleDeleteComment(post._id, comment.commentId)} className="delete-comment-button">
+                                            <FaTrashAlt size={15} color="red" />
+                                        </button>
+                                    )}
+                                </div>
+
+                                {comment.replies && comment.replies.map((reply) => (
+  <div key={reply.replyId} className="reply">
+    {reply.profilePicture ? (
+      <img 
+        src={`http://localhost:5000/${reply.profilePicture}`} 
+        alt={`${reply.username}'s profile`} 
+        className="profile-picture"
+      />
+    ) : (
+      <div className="profile-placeholder">?</div> 
+    )}
+    <strong>{reply.username}</strong>: {reply.content}
+  </div>
+))}
+
+
                                 <button onClick={() => handleAddReply(post._id, comment.commentId)} className="reply-button">
                                     Reply
                                 </button>
-
-                                {/* Show edit button (pen icon) only for the commenter */}
-                                {comment.userId === userId && (
-                                    <button onClick={() => handleEditComment(post._id, comment.commentId)} className="edit-comment-button">
-                                        <FaPen size={20} color="#007bff" />
-                                    </button>
-                                )}
-
-                                {/* Show delete button (trash icon) for both commenter and post owner */}
-                                {(comment.userId === userId || post.userId === userId) && (
-                                    <button onClick={() => handleDeleteComment(post._id, comment.commentId)} className="delete-comment-button">
-                                        <FaTrashAlt size={20} color="red" />
-                                    </button>
-                                )}
                             </div>
                         ))}
                     </div>
@@ -413,6 +440,8 @@ return (
         )}
     </div>
 );
+
+
 
 };
 

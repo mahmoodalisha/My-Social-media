@@ -105,21 +105,27 @@ const Activities = () => {
 
   return (
     <div className="navbar2-container">
-      <div className="navbar2-buttons">
-        {["Friends", "Pending Friend Request", "Activity", "Contacts", "Files"].map((item) => (
-          <button
-            key={item}
-            onClick={() => setActiveSection(item)}
-            className={activeSection === item ? "active" : ""}
-          >
-            {item}
-          </button>
-        ))}
+      <div className="navbar2-box">
+        <ul className="nav-menu">
+          {["Friends", "Pending Friend Request", "Activity", "Contacts", "Files"].map((item) => (
+            <li key={item}>
+              <a
+                href="#"
+                onClick={() => setActiveSection(item)}
+                className={activeSection === item ? "active" : ""}
+              >
+                {item}
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
-
+  
       <div className="navbar2-content">{renderContent()}</div>
     </div>
   );
+  
+  
 };
 
 export default Activities;

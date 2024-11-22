@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FaSearch } from "react-icons/fa"; // Import magnifying glass icon
 import axios from 'axios';
 import styles from "../styles/Navbar.module.css";
 
@@ -11,7 +12,6 @@ const Navbar = () => {
   const [username, setUsername] = useState(""); // State to store the username
 
   useEffect(() => {
-    // Fetch profile picture and username on component mount
     const fetchUserProfile = async () => {
       try {
         const userId = localStorage.getItem("userId");
@@ -104,15 +104,26 @@ const Navbar = () => {
           <li><Link to="/profile">Profile</Link></li>
         </ul>
         <div className={styles["nav-login"]}>
+          <div style={{ display: "flex", alignItems: "center", flexGrow: 1, marginTop: "10px" }}> {/* Added marginTop */}
           <input
-            type="text"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            placeholder="Search users..."
-            className={styles["search-input"]}
-          />
-          <button onClick={handleSearch} className={styles["search-button"]}>Search</button>
-          <button onClick={handleLogout}>Logout</button>
+  type="text"
+  value={searchTerm}
+  onChange={handleSearchChange}
+  placeholder="Search users..."
+  style={{
+    width: "300px", 
+    padding: "8px",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    fontSize: "1rem",
+  }}
+/>
+
+            <div className={styles["search-icon"]} onClick={handleSearch} style={{ marginLeft: "5px" }}>
+              <FaSearch />
+            </div>
+          </div>
+          <button onClick={handleLogout} style={{marginTop:"10px"}}>Logout</button>
         </div>
       </nav>
       {searchTerm.trim() && searchResults.length > 0 && (
@@ -131,6 +142,6 @@ const Navbar = () => {
       )}
     </>
   );
-};
-
-export default Navbar;
+}
+  export default Navbar;
+  

@@ -12,6 +12,3 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-.content {
-  margin-top: 60px; /* Adjust based on the navbar height */
-}

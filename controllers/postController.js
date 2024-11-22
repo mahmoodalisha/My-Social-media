@@ -71,7 +71,8 @@ const getPosts = async (req, res) => {
         user: {
           type: postUser.media ? postUser.media.type : undefined,
           url: postUser.media ? postUser.media.url : undefined,
-          username: postUser.username, 
+          username: postUser.username,
+          profilePicture: postUser.profilePicture, 
         },
         _id: post._id,
         content: post.content,
@@ -162,6 +163,7 @@ const getPostWithComments = async (req, res) => {
               replyId: reply.replyId,
               userId: reply.userId,
               username: replyUser ? replyUser.username : 'Unknown', 
+              profilePicture: replyUser ? replyUser.profilePicture : undefined,
               content: reply.content,
               timestamp: reply.timestamp,
             };
@@ -173,6 +175,7 @@ const getPostWithComments = async (req, res) => {
           commentId: comment.commentId,
           userId: comment.userId,
           username: user ? user.username : 'Unknown', 
+          profilePicture: user ? user.profilePicture : undefined,
           content: comment.content,
           timestamp: comment.timestamp,
           likes: comment.likes,
