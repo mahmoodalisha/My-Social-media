@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "../styles/Register.css"; // Reusing the same styling
-
+import "../styles/Register.css"; 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -17,7 +16,7 @@ const ForgotPassword = () => {
       const response = await axios.post("http://localhost:5000/api/users/forgot-password", { email });
       if (response.status === 200) {
         setMessage("Password reset link sent! Check your email.");
-        setTimeout(() => navigate("/login"), 5000); // Redirect back to login after 5 seconds
+        setTimeout(() => navigate("/login"), 10000); // Redirect back to login after 10 seconds
       }
     } catch (error) {
       console.error("Error sending reset email:", error);

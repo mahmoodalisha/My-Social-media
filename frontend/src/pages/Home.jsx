@@ -10,10 +10,10 @@ const Home = () => {
     const [loading, setLoading] = useState(true);
     const [hasMorePosts, setHasMorePosts] = useState(true);
     const [userId, setUserId] = useState(null);
-    const [comment, setComment] = useState(""); // State for the comment input
-    const [showCommentInput, setShowCommentInput] = useState(false); // State to toggle comment input
+    const [comment, setComment] = useState(""); 
+    const [showCommentInput, setShowCommentInput] = useState(false); 
     const [comments, setComments] = useState({}); 
-    const [visibleComments, setVisibleComments] = useState({}); // visibility of comments for each post
+    const [visibleComments, setVisibleComments] = useState({}); 
     const limit = 10; 
 
 
@@ -308,7 +308,56 @@ const handleAddReply = async (postId, commentId) => {
 
 
 
+const handleAddReplyToReply = async (postId, commentId, replyId) => {
+    const replyContent = prompt("Enter your reply:");
+    if (!replyContent) return;
 
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+
+    if (!token || !userId) {
+        console.error("Token or userId is missing, user is not authenticated");
+        return;
+    }
+
+    try {
+        const response = await axios.post(
+            `http://localhost:5000/api/posts/comments/replies/reply-to-reply`,
+            {
+                postId,
+                replyId,
+                userId,
+                content: replyContent,
+            },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        console.log("Reply to reply added successfully:", response.data);
+        // Update state to include the new nested reply
+        setComments((prevComments) => ({
+            ...prevComments,
+            [postId]: prevComments[postId].map((comment) =>
+                comment.commentId === commentId
+                    ? {
+                          ...comment,
+                          replies: comment.replies.map((reply) =>
+                              reply.replyId === replyId
+                                  ? { ...reply, replies: [...reply.replies, response.data.reply] }
+                                  : reply
+                          ),
+                      }
+                    : comment
+            ),
+        }));
+    } catch (error) {
+        console.error("Error adding reply to reply:", error.response ? error.response.data : error.message);
+    }
+};
     
     
 return (
@@ -322,10 +371,10 @@ return (
                     <div className="post-user">
                         <div className="post-user-info">
                             {post.user.profilePicture && (
-                                <img 
-                                    src={`http://localhost:5000/${post.user.profilePicture}`} 
-                                    alt={post.user.username} 
-                                    className="profile-picture" 
+                                <img
+                                    src={`http://localhost:5000/${post.user.profilePicture}`}
+                                    alt={post.user.username}
+                                    className="profile-picture"
                                 />
                             )}
                             <h3>{post.user.username}</h3>
@@ -335,7 +384,11 @@ return (
                         <p>{post.content}</p>
                         {post.media && post.media.url && (
                             post.media.type === 'photo' ? (
-                                <img src={`http://localhost:5000/${post.media.url}`} alt="Post media" className="post-media" />
+                                <img
+                                    src={`http://localhost:5000/${post.media.url}`}
+                                    alt="Post media"
+                                    className="post-media"
+                                />
                             ) : (
                                 <video controls className="post-media">
                                     <source src={`http://localhost:5000/${post.media.url}`} type="video/mp4" />
@@ -352,13 +405,11 @@ return (
                             <span style={{ color: "#333" }}>
                                 {post.likesCount || 0} {post.likesCount === 1 ? 'like' : 'likes'}
                             </span>
-
                             <button onClick={() => setShowCommentInput((prev) => !prev)} className="comment-button">
                                 <RiWechatLine size={30} className="comment-icon" />
                                 {showCommentInput ? 'Cancel' : 'Add Comment'}
                             </button>
                         </div>
-
                         {showCommentInput && (
                             <div className="comment-input">
                                 <input
@@ -370,79 +421,97 @@ return (
                                 <button onClick={() => addComment(post._id)}>Submit</button>
                             </div>
                         )}
-
                         <button onClick={() => loadComments(post._id)} className="show-comments-button">
                             {visibleComments[post._id] ? 'Hide Comments' : 'Show Comments'}
                         </button>
-
-                        {visibleComments[post._id] && comments[post._id] && Array.isArray(comments[post._id]) && comments[post._id].map((comment) => (
-                            <div key={comment.commentId} className="comment">
-                                <div className="comment-content">
-                                    <div className="comment-header">
-                                        {comment.profilePicture ? (
-                                            <img 
-                                                src={`http://localhost:5000/${comment.profilePicture}`} 
-                                                alt={`${comment.username}'s profile`} 
-                                                className="profile-picture"
-                                            />
-                                        ) : (
-                                            <div className="profile-placeholder">?</div> 
+                        {visibleComments[post._id] &&
+                            comments[post._id] &&
+                            Array.isArray(comments[post._id]) &&
+                            comments[post._id].map((comment) => (
+                                <div key={comment.commentId} className="comment">
+                                    <div className="comment-content">
+                                        <div className="comment-header">
+                                            {comment.profilePicture ? (
+                                                <img
+                                                    src={`http://localhost:5000/${comment.profilePicture}`}
+                                                    alt={`${comment.username}'s profile`}
+                                                    className="profile-picture"
+                                                />
+                                            ) : (
+                                                <div className="profile-placeholder">?</div>
+                                            )}
+                                            <strong>{comment.username}</strong>: {comment.content}
+                                            <button
+                                        onClick={() => handleAddReply(post._id, comment.commentId)}
+                                        className="reply-button"
+                                    >
+                                        Reply
+                                    </button>
+                                        </div>
+                                        {comment.userId === userId && (
+                                            <button
+                                                onClick={() => handleEditComment(post._id, comment.commentId)}
+                                                className="edit-comment-button"
+                                                style={{ marginRight: '2px' }}
+                                            >
+                                                <FaPen size={15} color="#007bff" />
+                                            </button>
                                         )}
-                                        <strong>{comment.username}</strong>: {comment.content}
-
-
+                                        {(comment.userId === userId || post.userId === userId) && (
+                                            <button
+                                                onClick={() => handleDeleteComment(post._id, comment.commentId)}
+                                                className="delete-comment-button"
+                                            >
+                                                <FaTrashAlt size={15} color="red" />
+                                            </button>
+                                        )}
                                     </div>
-
-                                    {comment.userId === userId && (
-                                        <button 
-                                            onClick={() => handleEditComment(post._id, comment.commentId)} 
-                                            className="edit-comment-button" 
-                                            style={{ marginRight: '2px' }}
-                                        >
-                                            <FaPen size={15} color="#007bff" />
-                                        </button>
-                                    )}
-
-                                    {(comment.userId === userId || post.userId === userId) && (
-                                        <button onClick={() => handleDeleteComment(post._id, comment.commentId)} className="delete-comment-button">
-                                            <FaTrashAlt size={15} color="red" />
-                                        </button>
-                                    )}
+                                    {comment.replies &&
+                                        comment.replies.map((reply) => (
+                                            <div key={reply.replyId} className="reply">
+                                                <div className="reply-content">
+                                                    {reply.profilePicture ? (
+                                                        <img
+                                                            src={`http://localhost:5000/${reply.profilePicture}`}
+                                                            alt={`${reply.username}'s profile`}
+                                                            className="profile-picture"
+                                                        />
+                                                    ) : (
+                                                        <div className="profile-placeholder">?</div>
+                                                    )}
+                                                    <strong>{reply.username}</strong>: {reply.content}
+                                                    <button
+                                                    onClick={() =>
+                                                        handleAddReplyToReply(post._id, comment.commentId, reply.replyId)
+                                                    }
+                                                    className="reply-button"
+                                                >
+                                                    Reply to Reply
+                                                </button>
+                                                </div>
+                                                
+                                                {reply.replies &&
+                                                    reply.replies.map((nestedReply) => (
+                                                        <div key={nestedReply.replyId} className="nested-reply">
+                                                            <strong>{nestedReply.username}</strong>: {nestedReply.content}
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        ))}
+                                    
                                 </div>
-
-                                {comment.replies && comment.replies.map((reply) => (
-  <div key={reply.replyId} className="reply">
-    {reply.profilePicture ? (
-      <img 
-        src={`http://localhost:5000/${reply.profilePicture}`} 
-        alt={`${reply.username}'s profile`} 
-        className="profile-picture"
-      />
-    ) : (
-      <div className="profile-placeholder">?</div> 
-    )}
-    <strong>{reply.username}</strong>: {reply.content}
-  </div>
-))}
-
-
-                                <button onClick={() => handleAddReply(post._id, comment.commentId)} className="reply-button">
-                                    Reply
-                                </button>
-                            </div>
-                        ))}
+                            ))}
                     </div>
                 </div>
             );
         })}
         {hasMorePosts && (
-            <button onClick={loadMorePosts} className="load-more">Load More</button>
+            <button onClick={loadMorePosts} className="load-more">
+                Load More
+            </button>
         )}
     </div>
 );
-
-
-
 };
 
 export default Home;

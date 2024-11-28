@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { sendFriendRequest, acceptFriendRequest, getFriends, getPendingFriendRequests, withdrawFriendRequest } = require('../controllers/friendController'); 
+const { sendFriendRequest, acceptFriendRequest, getFriends, getPendingFriendRequests, withdrawFriendRequest, removeFriend } = require('../controllers/friendController'); 
 const authMiddleware = require('../middleware/authMiddleware');
 
 // Send friend request
@@ -12,7 +12,10 @@ router.get('/:userId/friends', authMiddleware, getFriends);
 // Fetch pending friend requests for a user
 router.get('/:userId/pending-requests', authMiddleware, getPendingFriendRequests);
 // Withdraw a friend request
-router.post('/friend-request/withdraw', authMiddleware, withdrawFriendRequest);
+router.post('/withdraw', authMiddleware, withdrawFriendRequest);
+//remove a freind
+router.post('/remove-friend', authMiddleware, removeFriend);
+
 
 
 module.exports = router;

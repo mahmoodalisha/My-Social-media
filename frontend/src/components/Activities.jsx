@@ -10,15 +10,11 @@ const Activities = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Check if the section requires API calls
-    if (activeSection !== "Friends" && activeSection !== "Pending Friend Request") {
-      return; // Skip fetching for other sections
-    }
+    if (!["Friends", "Pending Friend Request"].includes(activeSection)) return;
 
     const userId = localStorage.getItem("userId");
     if (!userId) {
       setError("User is not logged in.");
-      setLoading(false);
       return;
     }
 
@@ -32,15 +28,11 @@ const Activities = () => {
             ? `http://localhost:5000/api/friends/${userId}/friends`
             : `http://localhost:5000/api/friends/${userId}/pending-requests`;
 
-        const response = await axios.get(endpoint, {
+        const { data } = await axios.get(endpoint, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
 
-        if (activeSection === "Friends") {
-          setFriends(response.data || []);
-        } else {
-          setPendingRequests(response.data || []);
-        }
+        activeSection === "Friends" ? setFriends(data || []) : setPendingRequests(data || []);
       } catch (err) {
         setError(`Failed to fetch ${activeSection.toLowerCase()}.`);
       } finally {
@@ -51,42 +43,135 @@ const Activities = () => {
     fetchData();
   }, [activeSection]);
 
+  const acceptFriendRequest = async (fromUserId) => {
+    const toUserId = localStorage.getItem("userId"); // Use logged-in user's ID
+
+    if (!toUserId) {
+      console.error("Logged-in user ID (toUserId) not found");
+      return;
+    }
+
+    try {
+      const { data } = await axios.post(
+        "http://localhost:5000/api/friends/friend-request/accept",
+        { fromUserId, toUserId },
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+      );
+
+      setPendingRequests((prev) => prev.filter((request) => request.fromUser._id !== fromUserId));
+      console.log("Friend request accepted:", data);
+    } catch (error) {
+      console.error("Error accepting friend request:", error.response?.data || error.message);
+    }
+  };
+
+  const removeFriend = async (friendId) => {
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+      console.error("Logged-in user ID not found.");
+      return;
+    }
+
+    try {
+      const { data } = await axios.post(
+        "http://localhost:5000/api/friends/remove-friend",
+        { userId, friendId },
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+      );
+
+      setFriends((prev) => prev.filter((friend) => friend._id !== friendId));
+      console.log(data.message);
+    } catch (error) {
+      console.error("Error removing friend:", error.response?.data || error.message);
+    }
+  };
+
   const renderContent = () => {
     const contentStyle = { color: "#333", fontSize: "18px", lineHeight: "1.6" };
 
     if (loading) return <div style={contentStyle}>Loading {activeSection.toLowerCase()}...</div>;
     if (error) return <div style={contentStyle}>{error}</div>;
 
-    if (activeSection === "Friends" || activeSection === "Pending Friend Request") {
-      const contentList =
-        activeSection === "Friends" ? friends : pendingRequests;
-      const title =
-        activeSection === "Friends" ? "Your Friends:" : "Pending Friend Requests:";
-      const noDataMessage =
-        activeSection === "Friends" ? "You have no friends." : "No pending friend requests.";
-
-      const filteredContentList = contentList.filter((item) => {
-        if (activeSection === "Friends") {
-          return item.username && item.email;
-        } else {
-          return item.fromUser && item.fromUser.username && item.fromUser.email;
-        }
-      });
+    if (["Friends", "Pending Friend Request"].includes(activeSection)) {
+      const contentList = activeSection === "Friends" ? friends : pendingRequests;
+      const title = activeSection === "Friends" ? "Your Friends:" : "Pending Friend Requests:";
+      const noDataMessage = activeSection === "Friends" ? "You have no friends." : "No pending friend requests.";
 
       return (
         <div style={contentStyle}>
-          <h3 style={{ fontSize: "20px", color: "#333" }}>{title}</h3>
-          {filteredContentList.length > 0 ? (
+          <h3 style={{ fontSize: "20px", color: "#333", marginLeft: "20px" }}>{title}</h3>
+          {contentList.length > 0 ? (
             <ul style={{ paddingLeft: "20px" }}>
-              {filteredContentList.map((item) => (
-                <li key={item._id} style={{ fontSize: "16px", color: "#333" }}>
+              {contentList.map((item) => (
+                <li
+                  key={item._id}
+                  style={{
+                    fontSize: "16px",
+                    color: "#333",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
                   {activeSection === "Friends" ? (
-                    <>
+                    <> 
+                      
+                      <img
+          src={`http://localhost:5000/${item.profilePicture}`} 
+          alt={item.username}
+          style={{
+            width: "40px",
+            height: "40px",
+            borderRadius: "50%",
+            marginRight: "10px",
+          }}
+        />
                       {item.username} - {item.email}
+                      <button
+                        style={{
+                          marginLeft: "auto",
+                          padding: "5px 10px",
+                          cursor: "pointer",
+                          backgroundColor: "red",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "5px",
+                        }}
+                        onClick={() => removeFriend(item._id)}
+                      >
+                        Remove
+                      </button>
                     </>
                   ) : (
-                    <>
+                    <>  
+
+
+<img
+          src={`http://localhost:5000/${item.fromUser.profilePicture}`} 
+          alt={item.fromUser.username}
+          style={{
+            width: "40px",
+            height: "40px",
+            borderRadius: "50%",
+            
+          }}
+        />
                       {item.fromUser.username} - {item.fromUser.email}
+                      <button
+                        style={{
+                          marginLeft: "auto",
+                          padding: "4px 5px",
+                          cursor: "pointer",
+                          backgroundColor: "green",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "5px",
+                        }}
+                        onClick={() => acceptFriendRequest(item.fromUser._id)}
+                      >
+                        Accept
+                      </button>
                     </>
                   )}
                 </li>
@@ -99,7 +184,6 @@ const Activities = () => {
       );
     }
 
-    // For other sections
     return <div style={contentStyle}>Content for {activeSection} is not available yet.</div>;
   };
 
@@ -120,12 +204,10 @@ const Activities = () => {
           ))}
         </ul>
       </div>
-  
+
       <div className="navbar2-content">{renderContent()}</div>
     </div>
   );
-  
-  
 };
 
 export default Activities;

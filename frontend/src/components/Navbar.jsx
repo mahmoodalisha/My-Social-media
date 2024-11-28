@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaSearch } from "react-icons/fa"; // Import magnifying glass icon
+import { FaSearch } from "react-icons/fa"; 
 import axios from 'axios';
 import styles from "../styles/Navbar.module.css";
 
@@ -9,7 +9,7 @@ const Navbar = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [profilePicture, setProfilePicture] = useState("");
-  const [username, setUsername] = useState(""); // State to store the username
+  const [username, setUsername] = useState(""); 
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -96,7 +96,7 @@ const Navbar = () => {
           ) : (
             <p>Your Logo</p>
           )}
-          {username && <span className={styles.username}> {username}</span>} {/* Render the username beside profile picture */}
+          {username && <span className={styles.username}> {username}</span>} 
         </div>
         <ul className={styles["nav-menu"]}>
           <li><Link to="/home">Home</Link></li>
@@ -104,7 +104,7 @@ const Navbar = () => {
           <li><Link to="/profile">Profile</Link></li>
         </ul>
         <div className={styles["nav-login"]}>
-          <div style={{ display: "flex", alignItems: "center", flexGrow: 1, marginTop: "10px" }}> {/* Added marginTop */}
+          <div style={{ display: "flex", alignItems: "center", flexGrow: 1, marginTop: "10px" }}> 
           <input
   type="text"
   value={searchTerm}

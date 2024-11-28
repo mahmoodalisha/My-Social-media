@@ -5,6 +5,7 @@ const replySchema = new mongoose.Schema({
   userId: { type: String, required: true },
   content: { type: String, required: true },
   timestamp: { type: String, required: true },
+  replies: { type: [mongoose.Schema.Types.Mixed], default: [] }, // Supports nested replies
 });
 
 const commentSchema = new mongoose.Schema({

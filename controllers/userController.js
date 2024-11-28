@@ -225,12 +225,15 @@ const forgotPassword = async (req, res) => {
     user.resetPasswordExpires = Date.now() + 3600000; // 1 hour expiration
     await user.save();
 
-    // Configure Nodemailer transporter
+    // Use Ethereal for local email testing
+    const testAccount = await nodemailer.createTestAccount();
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.ethereal.email',
+      port: 587,
+      secure: false, // true for 465, false for other ports
       auth: {
-        user: process.env.EMAIL_USER, // The sender's email address (from .env file)
-        pass: process.env.EMAIL_PASS, // The sender's email password (from .env file)
+        user: testAccount.user, // Generated ethereal user
+        pass: testAccount.pass, // Generated ethereal password
       },
     });
 
@@ -238,7 +241,7 @@ const forgotPassword = async (req, res) => {
     const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
     const mailOptions = {
       to: user.email,
-      from: process.env.EMAIL_USER,
+      from: testAccount.user,
       subject: 'Password Reset Request',
       text: `You are receiving this email because you requested a password reset. Click the link to reset your password: ${resetUrl}`,
     };
@@ -248,7 +251,10 @@ const forgotPassword = async (req, res) => {
       if (error) {
         return res.status(500).json({ message: "Error sending email." });
       }
-      res.status(200).json({ message: "Password reset email sent." });
+
+      // Log the preview URL for Ethereal testing
+      console.log('Preview URL:', nodemailer.getTestMessageUrl(info));
+      res.status(200).json({ message: "Password reset email sent.", previewUrl: nodemailer.getTestMessageUrl(info) });
     });
   } catch (error) {
     console.error("Error:", error);

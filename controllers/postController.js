@@ -149,37 +149,43 @@ const getPostWithComments = async (req, res) => {
       });
     }
 
+    // Utility function to fetch replies recursively
+    const mapRepliesWithUsernames = async (replies) => {
+      return Promise.all(
+        replies.map(async (reply) => {
+          const replyUser = await User.findById(reply.userId);
+          return {
+            replyId: reply.replyId,
+            userId: reply.userId,
+            username: replyUser ? replyUser.username : 'Unknown',
+            profilePicture: replyUser ? replyUser.profilePicture : undefined,
+            content: reply.content,
+            timestamp: reply.timestamp,
+            replies: await mapRepliesWithUsernames(reply.replies || []), // Recursively map nested replies
+          };
+        })
+      );
+    };
+
     // Fetch comments with usernames and their replies
     const commentsWithUsernames = await Promise.all(
       post.comments.map(async (comment) => {
         // Get the username of the commenter
         const user = await User.findById(comment.userId);
 
-        // Fetch replies with usernames
-        const repliesWithUsernames = await Promise.all(
-          comment.replies.map(async (reply) => {
-            const replyUser = await User.findById(reply.userId);
-            return {
-              replyId: reply.replyId,
-              userId: reply.userId,
-              username: replyUser ? replyUser.username : 'Unknown', 
-              profilePicture: replyUser ? replyUser.profilePicture : undefined,
-              content: reply.content,
-              timestamp: reply.timestamp,
-            };
-          })
-        );
+        // Fetch replies with usernames recursively
+        const repliesWithUsernames = await mapRepliesWithUsernames(comment.replies || []);
 
         // Return comment with its replies
         return {
           commentId: comment.commentId,
           userId: comment.userId,
-          username: user ? user.username : 'Unknown', 
+          username: user ? user.username : 'Unknown',
           profilePicture: user ? user.profilePicture : undefined,
           content: comment.content,
           timestamp: comment.timestamp,
           likes: comment.likes,
-          replies: repliesWithUsernames, 
+          replies: repliesWithUsernames, // Include nested replies
         };
       })
     );
@@ -191,6 +197,7 @@ const getPostWithComments = async (req, res) => {
     res.status(500).json({ message: 'Server error: ' + error.message });
   }
 };
+
 
 
 
@@ -359,6 +366,7 @@ const likeComment = async (req, res) => {
 };
 
 
+
 const addReply = async (req, res) => {
   console.log('Received request body:', req.body);
 
@@ -403,6 +411,77 @@ const addReply = async (req, res) => {
 
   } catch (error) {
     console.error('Error during addReply:', error.message);
+    return res.status(500).json({ message: 'Server error: ' + error.message });
+  }
+}; 
+
+//utility function to find a reply by its replyId recursively
+const findReplyById = (replies, replyId) => {
+  for (let reply of replies) {
+    if (reply.replyId === replyId) {
+      return reply;
+    }
+    if (reply.replies && reply.replies.length) {
+      const nestedReply = findReplyById(reply.replies, replyId);
+      if (nestedReply) return nestedReply;
+    }
+  }
+  return null;
+};
+
+
+const addReplyToReply = async (req, res) => {
+  const { postId, replyId, userId, content } = req.body;
+
+  try {
+    const post = await Post.findOne({ _id: new mongoose.Types.ObjectId(postId) });
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    let targetReply;
+    for (let comment of post.comments) {
+      targetReply = findReplyById(comment.replies, replyId);
+      if (targetReply) break;
+    }
+
+    if (!targetReply) {
+      return res.status(404).json({ message: 'Reply not found' });
+    }
+
+    const authorized = await isUserAuthorized(post.userId, userId, targetReply.userId, 'friendOwnerOrCommentOwner');
+    if (!authorized) {
+      return res.status(403).json({
+        message: 'You must be friends with the post owner, the reply owner, or the post owner themselves to reply to this reply.',
+      });
+    }
+
+    const replier = await User.findById(userId);
+    if (!replier) {
+      return res.status(404).json({ message: 'Replier not found' });
+    }
+
+    const newReply = {
+      replyId: uuidv4(),
+      userId,
+      content,
+      timestamp: Date.now().toString(),
+      replies: [],
+    };
+    targetReply.replies.push(newReply);
+
+    await post.save();
+
+    return res.status(201).json({
+      message: 'Reply added successfully',
+      reply: {
+        ...newReply,
+        username: replier.username,
+        profilePicture: replier.profilePicture,
+      },
+    });
+  } catch (error) {
+    console.error('Error during addReplyToReply:', error.message);
     return res.status(500).json({ message: 'Server error: ' + error.message });
   }
 };
@@ -509,5 +588,6 @@ module.exports = {
   likeComment,
   addReply,
   editComment,
-  deleteComment
+  deleteComment,
+  addReplyToReply
 };

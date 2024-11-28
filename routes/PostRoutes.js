@@ -1,5 +1,5 @@
 const express = require('express');
-const { createPost, getPosts, likePost, addComment, likeComment, addReply, getPostWithComments, editComment, deleteComment } = require('../controllers/postController');
+const { createPost, getPosts, likePost, addComment, likeComment, addReply, getPostWithComments, editComment, deleteComment, addReplyToReply } = require('../controllers/postController');
 const router = express.Router();
 const authMiddleware = require('../middleware/authMiddleware');
 const multer = require('multer');
@@ -25,6 +25,7 @@ router.post('/posts/like', authMiddleware, likePost);
 router.post('/posts/comments', authMiddleware, addComment);
 router.post('/posts/comments/like', authMiddleware, likeComment);
 router.post('/posts/comments/replies', authMiddleware, addReply);
+router.post('/posts/comments/replies/reply-to-reply', authMiddleware, addReplyToReply);
 router.get('/posts/:postId/comments', authMiddleware, getPostWithComments);
 router.put('/posts/comments/edit', editComment);
 router.delete('/posts/comments/delete', deleteComment);

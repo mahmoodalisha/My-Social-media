@@ -55,3 +55,23 @@
   box-sizing: border-box; /* Ensures padding is included in the width calculation */
   color: #333; /* Apply #333 color for all text in the content */
 }
+
+/* Style for the flex display in the list items */
+.navbar2-content ul li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  color: #333;
+  gap: 6px;
+}
+
+.navbar2-content ul li button {
+  margin-right: 35px;
+  padding: 5px 7px;
+  cursor: pointer;
+}
+
+.navbar2-content ul li img {
+  margin-right: 0; /* Remove extra space */
+}

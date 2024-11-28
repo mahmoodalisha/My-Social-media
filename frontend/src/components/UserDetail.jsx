@@ -30,7 +30,9 @@ const UserDetail = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        
+    
+        console.log(response.data); // inspecting the structure
+    
         const sentRequest = response.data.find(request => request.toUser._id === userId);
         if (sentRequest) {
           setFriendRequestSent(true);
@@ -40,6 +42,7 @@ const UserDetail = () => {
         console.error('Error fetching pending requests:', err);
       }
     };
+    
 
     fetchUserDetails();
     fetchPendingFriendRequest();

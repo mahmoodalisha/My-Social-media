@@ -1,4 +1,3 @@
-// src/components/Register.jsx
 import React from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";

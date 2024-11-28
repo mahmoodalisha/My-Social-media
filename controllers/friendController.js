@@ -60,22 +60,21 @@ const sendFriendRequest = async (req, res) => {
 // Fetch pending friend requests for a user
 const getPendingFriendRequests = async (req, res) => {
     const { userId } = req.params;
-
+  
     try {
         const pendingRequests = await FriendRequests.find({
             toUser: userId,
             status: 'pending'
-        }).populate('fromUser', 'username email'); // Populate only the sender's info
-
-        if (pendingRequests.length === 0) {
-            return res.status(200).json({ message: "No pending friend requests." });
-        }
-
-        res.status(200).json(pendingRequests);
+        }).populate('fromUser', 'username email profilePicture'); // Populate only the sender's info
+  
+        // Always return an array (even if empty)
+        return res.status(200).json(pendingRequests || []); // Ensure it's an array
+  
     } catch (error) {
         res.status(500).json({ message: 'Error fetching pending friend requests: ' + error.message });
     }
-};
+  };
+  
 
 // Accept a friend request
 const acceptFriendRequest = async (req, res) => {
@@ -129,7 +128,7 @@ const getFriends = async (req, res) => {
     try {
         const friendships = await Friends.find({
             $or: [{ user1: userId }, { user2: userId }]
-        }).populate('user1 user2', 'username email');
+        }).populate('user1 user2', 'username email profilePicture');
 
         const friends = friendships.map(friendship =>
             friendship.user1._id.toString() === userId ? friendship.user2 : friendship.user1
@@ -139,6 +138,41 @@ const getFriends = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Error fetching friends: ' + error.message });
     }
+}; 
+
+// Remove a friend
+const removeFriend = async (req, res) => {
+    const { userId, friendId } = req.body;
+
+    if (!userId || !friendId) {
+        return res.status(400).json({ message: 'Both user ID and friend ID are required' });
+    }
+
+    try {
+        // Check if the user is friends with the specified friend
+        const friendship = await Friends.findOne({
+            $or: [
+                { user1: userId, user2: friendId },
+                { user1: friendId, user2: userId }
+            ]
+        });
+
+        if (!friendship) {
+            return res.status(404).json({ message: 'Friendship not found' });
+        }
+
+        // Remove the friendship document
+        await Friends.findByIdAndDelete(friendship._id);
+
+        // Remove the friend from both users' friends lists
+        await User.findByIdAndUpdate(userId, { $pull: { friends: friendId } });
+        await User.findByIdAndUpdate(friendId, { $pull: { friends: userId } });
+
+        res.status(200).json({ message: 'Friend removed successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error removing friend: ' + error.message });
+    }
 };
 
-module.exports = { sendFriendRequest, acceptFriendRequest, getFriends, getPendingFriendRequests, withdrawFriendRequest };
+
+module.exports = { sendFriendRequest, acceptFriendRequest, getFriends, getPendingFriendRequests, withdrawFriendRequest, removeFriend };

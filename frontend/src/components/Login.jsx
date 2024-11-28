@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/slices/authSlice";
-import "../styles/Register.css"; // Use the same styles for consistency
+import "../styles/Register.css"; 
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Required"),

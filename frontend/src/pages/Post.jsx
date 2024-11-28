@@ -26,7 +26,7 @@ const Post = () => {
         formData.append('content', content);
     
         if (media) {
-            formData.append('profilePicture', media); // Ensure correct field name matches backend
+            formData.append('profilePicture', media); 
         }
     
         try {
@@ -47,7 +47,7 @@ const Post = () => {
             setError(null);
         } catch (error) {
             if (error.response && error.response.data.message) {
-                alert(error.response.data.message); // Display backend error message
+                alert(error.response.data.message); 
             } else {
                 alert('You can only upload jpg or png type of file');
             }
