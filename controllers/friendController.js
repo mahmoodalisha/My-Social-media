@@ -68,7 +68,7 @@ const getPendingFriendRequests = async (req, res) => {
         }).populate('fromUser', 'username email profilePicture'); // Populate only the sender's info
   
         // Always return an array (even if empty)
-        return res.status(200).json(pendingRequests || []); // Ensure it's an array
+        return res.status(200).json(pendingRequests || []); 
   
     } catch (error) {
         res.status(500).json({ message: 'Error fetching pending friend requests: ' + error.message });

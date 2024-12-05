@@ -11,7 +11,6 @@ const ResetPassword = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Optionally check if the token is valid here
   }, [token]);
 
   const handleSubmit = async (e) => {

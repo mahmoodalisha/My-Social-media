@@ -41,7 +41,7 @@ const Post = () => {
                 }
             );
             console.log('Profile picture uploaded:', response.data);
-            alert('Profile picture uploaded successfully!'); // Success message
+            alert('Profile picture uploaded successfully!'); 
             setContent('');
             setMedia(null);
             setError(null);

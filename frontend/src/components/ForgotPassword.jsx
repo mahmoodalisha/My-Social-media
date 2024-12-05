@@ -16,7 +16,7 @@ const ForgotPassword = () => {
       const response = await axios.post("http://localhost:5000/api/users/forgot-password", { email });
       if (response.status === 200) {
         setMessage("Password reset link sent! Check your email.");
-        setTimeout(() => navigate("/login"), 10000); // Redirect back to login after 10 seconds
+        setTimeout(() => navigate("/login"), 10000); 
       }
     } catch (error) {
       console.error("Error sending reset email:", error);

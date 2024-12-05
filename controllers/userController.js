@@ -131,7 +131,7 @@ const uploadProfilePicture = async (req, res) => {
     for (const size of sizes) {
       const resizedFilePath = path.join('uploads/profile-pictures', `${size}-${req.file.filename}`);
       await sharp(filePath)
-        .resize(size === 'small' ? 50 : size === 'medium' ? 150 : 300) // Resize based on size type
+        .resize(size === 'small' ? 50 : size === 'medium' ? 150 : 300) 
         .toFile(resizedFilePath);
       resizedPaths.push(resizedFilePath);
     }

@@ -7,7 +7,7 @@ const Layout = ({ children }) => {
 
   return (
     <>
-      {/* Conditionally render the Navbar based on the route */}
+      
       {location.pathname !== "/login" && 
         location.pathname !== "/register" && 
         location.pathname !== "/forgot-password" && 
@@ -15,7 +15,7 @@ const Layout = ({ children }) => {
         <Navbar />}
       
       <div className="content" style={{ paddingTop: '60px' }}>
-        {children} {/* Main content area */}
+        {children} 
       </div>
     </>
   );

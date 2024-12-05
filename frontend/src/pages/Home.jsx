@@ -256,7 +256,7 @@ const Home = () => {
 
 const handleAddReply = async (postId, commentId) => {
     const replyContent = prompt("Enter your reply:");
-    if (!replyContent) return; // Exit if no content is entered
+    if (!replyContent) return; 
 
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");

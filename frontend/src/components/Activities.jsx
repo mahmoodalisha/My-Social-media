@@ -44,7 +44,7 @@ const Activities = () => {
   }, [activeSection]);
 
   const acceptFriendRequest = async (fromUserId) => {
-    const toUserId = localStorage.getItem("userId"); // Use logged-in user's ID
+    const toUserId = localStorage.getItem("userId"); 
 
     if (!toUserId) {
       console.error("Logged-in user ID (toUserId) not found");

@@ -5,13 +5,13 @@ const mongoose = require('mongoose');
 
 // 1. Create a Post with file upload
 const createPost = async (req, res) => {
-  const { userId, content } = req.body; // Extract userId and content from the body
+  const { userId, content } = req.body; 
 
   try {
     const userRecord = await User.findById(userId);
     if (!userRecord) return res.status(404).json({ message: 'User not found' });
 
-    // Handle the media file
+    
     let media = null;
     if (req.file) {
       const validMimeTypes = ['image/jpeg', 'image/png', 'video/mp4'];
@@ -46,9 +46,9 @@ const createPost = async (req, res) => {
 
 // 2. Get Posts by Friends and author himself
 const getPosts = async (req, res) => {
-  const { userId } = req.query; // Get userId from query parameters
-  const page = parseInt(req.query.page) || 1; // Parse page number
-  const limit = parseInt(req.query.limit) || 10; // Parse limit
+  const { userId } = req.query; 
+  const page = parseInt(req.query.page) || 1; 
+  const limit = parseInt(req.query.limit) || 10; 
 
   try {
     const user = await User.findById(userId);
@@ -116,7 +116,7 @@ const getPosts = async (req, res) => {
 
 // 3. Get Post with Paginated Comments
 const getPostWithComments = async (req, res) => {
-  const { postId } = req.params; // Extract postId from the URL
+  const { postId } = req.params; 
   const { page = 1, limit = 10, userId } = req.query; // Pagination and userId from query parameters
 
   try {

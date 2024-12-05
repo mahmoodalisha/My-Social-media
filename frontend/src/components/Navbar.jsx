@@ -20,7 +20,7 @@ const Navbar = () => {
           return;
         }
 
-        // Fetch profile picture
+        
         const profileResponse = await axios.get(
           `http://localhost:5000/api/users/${userId}/get-profile-picture`,
           {
@@ -34,7 +34,7 @@ const Navbar = () => {
           setProfilePicture(profileResponse.data.profilePicture);
         }
 
-        // Fetch username
+       
         const userResponse = await axios.get(
           `http://localhost:5000/api/users/${userId}`,
           {

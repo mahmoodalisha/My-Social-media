@@ -1,8 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { Provider } from "react-redux"; // Redux Provider
-import { AuthProvider } from "./context/AuthContext"; // Auth Context Provider
-import store from "./redux/store"; // Redux store
+import { Provider } from "react-redux"; 
+import { AuthProvider } from "./context/AuthContext"; 
+import store from "./redux/store"; 
 import Login from "./components/Login";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
@@ -16,7 +16,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   return (
-    // Wrapping App with Redux Provider and Auth Context Provider
+    
     <Provider store={store}>
       <AuthProvider>
         <Router>
@@ -62,7 +62,7 @@ const App = () => {
                 } 
               />
 
-              {/* Root Path */}
+              
               <Route
                 path="/"
                 element={
