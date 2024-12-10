@@ -30,3 +30,6 @@ A fully-featured social media platform built using the **MERN stack** (MongoDB, 
 ![Screenshot 2024-11-26 103733](https://github.com/user-attachments/assets/81770ad4-5c93-44fa-a384-2a28fa30801c)
 
 ![Screenshot 2024-11-27 143512](https://github.com/user-attachments/assets/445fa5cd-0a6b-421e-a8d1-44f296f7b777)
+
+
+![Screenshot 2024-11-26 115018](https://github.com/user-attachments/assets/e951ac7d-1f62-45b2-a90b-3e5e82a6989f)
