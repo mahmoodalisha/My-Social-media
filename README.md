@@ -17,6 +17,8 @@ A fully-featured social media platform built using the **MERN stack** (MongoDB, 
   - Like posts.
   - Comment on posts.
   - Reply to comments and replies.
+  - Author of the comment or post can delete a comment.
+  - Author of the comment can edit his comment.
 - **Logout**: Securely log out of the application. 
 
 
