@@ -1,21 +1,21 @@
 .register-container {
     max-width: 400px;
     margin: 50px auto;
-    padding: 15px; /* Reduced padding */
-    background-color: #f9f9f9; /* Light background for better contrast */
+    padding: 15px; 
+    background-color: #f9f9f9; 
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     color: #333;
-    width: auto; /* Ensure container width is adjusted based on content */
-    height: auto; /* Let the height adjust based on content */
+    width: auto; 
+    height: auto; 
 }
 
-/* Heading styling */
+
 h3 {
-    color: #222222 !important; /* Darker color for headings */
+    color: #222222 !important; 
     font-weight: bold;
     text-align: center;
-    margin-bottom: 10px; /* Reduced margin */
+    margin-bottom: 10px; 
     font-size: 2.0em;
 }
 
@@ -24,15 +24,15 @@ label {
     margin-bottom: 3px;
     display: block;
     color: #333;
-    font-size: 1.5em; /* Increased font size */
+    font-size: 1.5em; 
 }
 
 input[type="text"],
 input[type="email"],
 input[type="password"] {
     width: 89%;
-    padding: 8px; /* Reduced padding */
-    margin: 3px 0 10px; /* Reduced margin */
+    padding: 8px; 
+    margin: 3px 0 10px; 
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #f0f0f0;
@@ -44,28 +44,56 @@ input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus {
     background-color: #e6e6e6;
-    border-color: #8b0c0c;
     outline: none;
-    font-size: 2.1em;
 }
 
-/* Error message styling */
+
 div {
     color: #b30000;
     font-size: 0.875em;
-    margin-top: -8px; /* Reduced margin */
-    margin-bottom: 8px; /* Reduced margin */
+    margin-top: -8px; 
+    margin-bottom: 8px; 
 }
 
-/* Button styling */
-button[type="submit"] {
-    width: 18%;
-    padding: 8px; /* Reduced padding */
-    background-color: #333;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
+button[type="submit"],
+button[type="button"] {
+  width: 18%;
+  padding: 8px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.1s ease, background-color 0.1s ease;
 }
+
+button[type="submit"]:hover,
+button[type="button"]:hover {
+  background-color: #555;
+  transform: scale(1.2);
+}
+
+button[type="submit"]:active,
+button[type="button"]:active {
+  background-color: #555;
+  transform: scale(1.2);
+}
+
 p {
-    font-size: 1.2em; /* Increased font size */
+    font-size: 1.2em; 
+}
+.otp-button {
+  width: 18%;
+  padding: 8px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.otp-button.disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
 }

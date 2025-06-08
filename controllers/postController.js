@@ -2,12 +2,14 @@ const { v4: uuidv4, validate: uuidValidate } = require('uuid');
 const { Post, Like } = require('../models/Post');
 const User = require('../models/User');
 const mongoose = require('mongoose');
+const uploadToCloudinary = require('../utils/cloudinaryUpload');
+const cloudinary = require('../config/cloudinary');
 
-// 1. Create a Post with file upload
 const createPost = async (req, res) => {
-  const { userId, content } = req.body; 
+  const { content } = req.body; 
 
   try {
+    const userId = req.user.id;
     const userRecord = await User.findById(userId);
     if (!userRecord) return res.status(404).json({ message: 'User not found' });
 
@@ -19,9 +21,11 @@ const createPost = async (req, res) => {
         return res.status(400).json({ message: 'Invalid file type. Only JPEG, PNG, and MP4 are allowed.' });
       }
 
+      const result = await uploadToCloudinary(req.file.buffer, 'post-media');
+
       media = {
         type: req.file.mimetype.startsWith('image') ? 'photo' : 'video',
-        url: req.file.filename, 
+        url: result.secure_url, 
       };
     }
 
@@ -44,7 +48,7 @@ const createPost = async (req, res) => {
 };
 
 
-// 2. Get Posts by Friends and author himself
+//Get Posts by Friends and author himself
 const getPosts = async (req, res) => {
   const { userId } = req.query; 
   const page = parseInt(req.query.page) || 1; 
@@ -114,7 +118,7 @@ const getPosts = async (req, res) => {
   }
 };
 
-// 3. Get Post with Paginated Comments
+//Get Post with Paginated Comments
 const getPostWithComments = async (req, res) => {
   const { postId } = req.params; 
   const { page = 1, limit = 10, userId } = req.query; // Pagination and userId from query parameters
@@ -202,7 +206,7 @@ const getPostWithComments = async (req, res) => {
 
 
 
-//4.Like a Post
+
 const likePost = async (req, res) => {
   const { postId, fromUserId } = req.body;
 
@@ -278,7 +282,7 @@ const isUserAuthorized = async (postOwnerId, userId, commentOwnerId = null, requ
   }
 };
 
-// Add a Comment
+
 const addComment = async (req, res) => {
   let { postId, userId, content } = req.body;
 
@@ -320,7 +324,7 @@ const addComment = async (req, res) => {
   }
 };
 
-// Like a Comment
+
 const likeComment = async (req, res) => {
   const { postId, commentId, userId } = req.body;
 
@@ -330,15 +334,15 @@ const likeComment = async (req, res) => {
   }
 
   try {
-    // Find the user
+    
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    // Find the post by `postId` 
+    
     const post = await Post.findOne({ postId });
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
-    // Find the comment within the post
+    
     const comment = post.comments.find((c) => c.commentId === commentId);
     if (!comment) return res.status(404).json({ message: 'Comment not found' });
 
@@ -352,7 +356,7 @@ const likeComment = async (req, res) => {
     if (!comment.likes.includes(userId)) {
       comment.likes.push(userId);
     } else {
-      // Remove like if the user already liked it
+      
       comment.likes = comment.likes.filter((like) => like !== userId);
     }
 
@@ -518,7 +522,7 @@ const editComment = async (req, res) => {
           return res.status(403).json({ message: 'You do not have permission to edit this comment' });
       }
 
-      // Update the comment content
+      
       comment.content = newContent;
       await post.save();
       return res.status(200).json({ message: 'Comment edited successfully' });
@@ -530,7 +534,7 @@ const editComment = async (req, res) => {
 };
 
 
-// Delete a Comment
+
 const deleteComment = async (req, res) => {
   console.log('Received request body:', req.body);
 

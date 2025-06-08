@@ -1,29 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { registerUser, loginUser, searchUsers, getUserById, uploadProfilePicture, deleteProfilePicture, getProfilePicture, forgotPassword, resetPassword } = require('../controllers/userController');
+const { registerUser, loginUser, searchUsers, getUserById, uploadProfilePicture, deleteProfilePicture, getProfilePicture, forgotPassword, resetPassword, requestOtp, verifyOtp } = require('../controllers/userController');
 const authMiddleware = require('../middleware/authMiddleware');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = 'uploads/profile-pictures';
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, 
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.startsWith('image')) {
       return cb(new Error('Only image files are allowed!'), false);
@@ -31,6 +16,7 @@ const upload = multer({
     cb(null, true);
   }
 });
+
 
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
@@ -56,7 +42,8 @@ router.post(
 
 router.delete('/delete-profile-picture', authMiddleware, deleteProfilePicture);
 router.get('/:userId/get-profile-picture', authMiddleware, getProfilePicture);
-
+router.post("/request-otp", requestOtp);
+router.post("/verify-otp", verifyOtp);
 
 
 module.exports = router;

@@ -118,7 +118,7 @@ const Profile = () => {
   <div className="profile-picture">
     {profilePicture ? (
       <img
-        src={`http://localhost:5000/${profilePicture}`}
+        src={profilePicture}
         alt="Profile"
         className="profile-picture-img"
       />

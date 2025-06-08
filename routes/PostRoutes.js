@@ -7,18 +7,18 @@ const path = require('path');
 
 
 //uploading a file is a common function, make a new file where all the uploads operation will be done
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/'); 
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname)); 
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'video/mp4'];
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      return cb(new Error('Only JPEG, PNG images and MP4 videos are allowed!'), false);
     }
+    cb(null, true);
+  }
 });
 
-const upload = multer({ storage: storage });
-
-//endpoints need to be corrected and shortened
 router.post('/posts', authMiddleware, upload.single('mediaFile'), createPost);
 router.get('/posts', authMiddleware, getPosts);
 router.post('/posts/like', authMiddleware, likePost);

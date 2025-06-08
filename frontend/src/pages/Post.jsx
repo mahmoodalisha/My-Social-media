@@ -7,6 +7,7 @@ const Post = () => {
     const [media, setMedia] = useState(null);
     const [userId, setUserId] = useState(null); 
     const [error, setError] = useState(null);
+    
 
     useEffect(() => {
         const id = localStorage.getItem('userId');
@@ -22,16 +23,15 @@ const Post = () => {
     
         const token = localStorage.getItem('token');
         const formData = new FormData();
-        formData.append('userId', userId);
         formData.append('content', content);
     
         if (media) {
-            formData.append('profilePicture', media); 
+            formData.append('mediaFile', media); 
         }
     
         try {
             const response = await axios.post(
-                'http://localhost:5000/api/users/upload-profile-picture',
+                'http://localhost:5000/api/posts',
                 formData,
                 {
                     headers: {
@@ -40,8 +40,8 @@ const Post = () => {
                     },
                 }
             );
-            console.log('Profile picture uploaded:', response.data);
-            alert('Profile picture uploaded successfully!'); 
+            console.log('Post created:', response.data);
+            alert('Post created successfully!');
             setContent('');
             setMedia(null);
             setError(null);

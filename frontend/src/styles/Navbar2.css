@@ -1,62 +1,61 @@
-/* Navbar2 container styling */
 .navbar2-container {
   margin-top: 2px;
   display: flex;
-  flex-direction: column; /* Stack buttons and content vertically */
-  align-items: center; /* Center align everything horizontally */
+  flex-direction: column; 
+  align-items: center; 
   color: #333;
-  max-width: 100%; /* Removed the fixed max-width */
-  margin-left: auto; /* Align to the left side */
-  margin-right: auto; /* Center horizontally */
+  max-width: 100%; 
+  margin-left: auto; 
+  margin-right: auto; 
 }
 
-/* Container around the navbar items */
+
 .navbar2-box {
-  background-color: #f1f1f1; /* Light grey background */
-  padding: 10px; /* Padding around the items */
-  width: 720px; /* Ensure it takes full width of the parent */
-  margin-top: 0.2rem; /* Add some space at the top */
+  background-color: #f1f1f1; 
+  padding: 10px; 
+  width: 720px; 
+  margin-top: 0.2rem; 
   border: 1px solid #ddd;
-  max-width: 100%; /* Removed the fixed max-width */
+  max-width: 100%; 
 }
 
-/* Styling the navbar menu */
+
 .nav-menu {
   display: flex;
   list-style: none;
-  gap: 1.5rem; /* Space out the items */
-  padding: 0; /* Remove default padding */
-  margin: 0; /* Remove default margin */
+  gap: 1.5rem; 
+  padding: 0; 
+  margin: 0; 
   width: 672px;
 }
 
 .nav-menu li a {
-  text-decoration: none; /* Remove underline */
-  color: #333; /* Default text color */
-  font-size: 1rem; /* Set font size */
-  transition: color 0.3s; /* Smooth color transition */
+  text-decoration: none; 
+  color: #333; 
+  font-size: 1rem; 
+  transition: color 0.3s; 
 }
 
 .nav-menu li a:hover {
-  text-decoration: underline; /* Underline text on hover */
+  text-decoration: underline; 
 }
 
 .nav-menu li a.active {
-  text-decoration: underline; /* Underline for the active link */
-  color: #007bff; /* Change color for active item */
+  text-decoration: underline; 
+  color: #007bff; 
 }
 
-/* Styling for the content section */
+
 .navbar2-content {
   margin-top: 2px;
   border: 1px solid #ddd;
   background-color: #f1f1f1;
-  width: 738px; /* Ensure it takes full width of the container */
-  box-sizing: border-box; /* Ensures padding is included in the width calculation */
-  color: #333; /* Apply #333 color for all text in the content */
+  width: 738px; 
+  box-sizing: border-box; 
+  color: #333; 
 }
 
-/* Style for the flex display in the list items */
+
 .navbar2-content ul li {
   display: flex;
   justify-content: space-between;
@@ -73,5 +72,174 @@
 }
 
 .navbar2-content ul li img {
-  margin-right: 0; /* Remove extra space */
+  margin-right: 0; 
+}
+
+
+@media (max-width: 800px) {
+  .navbar2-box,
+  .navbar2-content {
+    width: 98vw;
+    min-width: 0;
+    max-width: 100vw;
+    padding-left: 2vw;
+    padding-right: 2vw;
+  }
+  .nav-menu {
+    width: 94vw;
+    gap: 1vw;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar2-container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .navbar2-box,
+  .navbar2-content {
+    width: 100vw;
+    min-width: 0;
+    max-width: 100vw;
+    padding: 6px 2vw;
+    border-radius: 0;
+  }
+  .nav-menu {
+    width: 96vw;
+    gap: 2vw;
+    font-size: 0.95rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .nav-menu li a {
+    font-size: 0.95rem;
+    padding: 4px 0;
+  }
+  .navbar2-content ul li {
+    font-size: 14px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  .navbar2-content ul li button {
+    margin-right: 0;
+    margin-top: 4px;
+    padding: 4px 8px;
+    font-size: 0.9rem;
+  }
+}
+
+
+@media (max-width: 400px) {
+  .navbar2-box,
+  .navbar2-content {
+    padding: 3px 1vw;
+  }
+  .nav-menu {
+    gap: 1vw;
+    font-size: 0.85rem;
+  }
+  .nav-menu li a {
+    font-size: 0.85rem;
+  }
+  .navbar2-content ul li {
+    font-size: 12px;
+  }
+}
+
+
+
+@media (max-width: 900px) {
+  .navbar2-box,
+  .navbar2-content {
+    width: 98vw;
+    min-width: 0;
+    max-width: 100vw;
+    padding-left: 2vw;
+    padding-right: 2vw;
+  }
+  .nav-menu {
+    width: 94vw;
+    gap: 1vw;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar2-box,
+  .navbar2-content {
+    width: 100vw;
+    min-width: 0;
+    max-width: 100vw;
+    padding: 6px 2vw;
+    border-radius: 0;
+    box-sizing: border-box;
+  }
+  .nav-menu {
+    width: 98vw;
+    gap: 2vw;
+    font-size: 0.95rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .nav-menu li {
+    margin-bottom: 2px;
+  }
+  .nav-menu li a {
+    font-size: 0.95rem;
+    padding: 4px 0;
+  }
+  .navbar2-content h3 {
+    font-size: 1rem !important;
+    margin-left: 0 !important;
+  }
+  .navbar2-content ul {
+    padding-left: 0 !important;
+  }
+  .navbar2-content ul li {
+    font-size: 14px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    padding: 6px 0 !important;
+  }
+  .navbar2-content ul li img {
+    width: 32px !important;
+    height: 32px !important;
+    margin-bottom: 4px !important;
+    margin-right: 0 !important;
+  }
+  .navbar2-content ul li button {
+    margin-right: 0 !important;
+    margin-top: 4px !important;
+    padding: 4px 8px !important;
+    font-size: 0.9rem !important;
+    width: 100%;
+    max-width: 120px;
+  }
+}
+
+@media (max-width: 400px) {
+  .navbar2-box,
+  .navbar2-content {
+    padding: 3px 1vw;
+  }
+  .nav-menu {
+    gap: 1vw;
+    font-size: 0.85rem;
+  }
+  .nav-menu li a {
+    font-size: 0.85rem;
+  }
+  .navbar2-content ul li {
+    font-size: 12px !important;
+  }
+  .navbar2-content ul li img {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  .navbar2-content ul li button {
+    font-size: 0.8rem !important;
+    padding: 3px 6px !important;
+    max-width: 100px;
+  }
 }

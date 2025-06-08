@@ -31,7 +31,7 @@ RESPONSE {
 POST http://localhost:5000/api/posts  //by UserA
 {
     "user": {
-        "userId": "672091560eaec1cffd1ec938"
+        "userId": "6841d084cd7bb25231fbc1da"
     },
     "content": "This is a post by UserA",
     "media": {

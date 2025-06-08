@@ -99,89 +99,91 @@ const Activities = () => {
       const noDataMessage = activeSection === "Friends" ? "You have no friends." : "No pending friend requests.";
 
       return (
-        <div style={contentStyle}>
-          <h3 style={{ fontSize: "20px", color: "#333", marginLeft: "20px" }}>{title}</h3>
-          {contentList.length > 0 ? (
-            <ul style={{ paddingLeft: "20px" }}>
-              {contentList.map((item) => (
-                <li
-                  key={item._id}
+  <div style={contentStyle}>
+    <h3 style={{ fontSize: "20px", color: "#333", marginLeft: "20px" }}>{title}</h3>
+    {contentList.length > 0 ? (
+      <ul style={{ paddingLeft: "20px" }}>
+        {(activeSection === "Pending Friend Request"
+          ? contentList.filter((item) => item.fromUser)
+          : contentList
+        ).map((item) => (
+          <li
+            key={item._id}
+            style={{
+              fontSize: "16px",
+              color: "#333",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "10px",
+            }}
+          >
+            {activeSection === "Friends" ? (
+              <>
+                <img
+                  src={item.profilePicture}
+                  alt={item.username}
                   style={{
-                    fontSize: "16px",
-                    color: "#333",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                    marginRight: "10px",
                   }}
+                />
+                {item.username} - {item.email}
+                <button
+                  style={{
+                    marginLeft: "auto",
+                    padding: "5px 10px",
+                    cursor: "pointer",
+                    backgroundColor: "red",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "5px",
+                  }}
+                  onClick={() => removeFriend(item._id)}
                 >
-                  {activeSection === "Friends" ? (
-                    <> 
-                      
-                      <img
-          src={`http://localhost:5000/${item.profilePicture}`} 
-          alt={item.username}
-          style={{
-            width: "40px",
-            height: "40px",
-            borderRadius: "50%",
-            marginRight: "10px",
-          }}
-        />
-                      {item.username} - {item.email}
-                      <button
-                        style={{
-                          marginLeft: "auto",
-                          padding: "5px 10px",
-                          cursor: "pointer",
-                          backgroundColor: "red",
-                          color: "white",
-                          border: "none",
-                          borderRadius: "5px",
-                        }}
-                        onClick={() => removeFriend(item._id)}
-                      >
-                        Remove
-                      </button>
-                    </>
-                  ) : (
-                    <>  
+                  Remove
+                </button>
+              </>
+            ) : (
+              <>
+                <img
+                  src={item.fromUser.profilePicture}
+                  alt={item.fromUser.username}
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                    marginRight: "10px",
+                  }}
+                />
+                {item.fromUser.username} - {item.fromUser.email}
+                <button
+                  style={{
+                    marginLeft: "auto",
+                    padding: "5px 10px",
+                    cursor: "pointer",
+                    backgroundColor: "green",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "5px",
+                  }}
+                  onClick={() => acceptFriendRequest(item.fromUser._id)}
+                >
+                  Accept
+                </button>
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <div style={{ color: "#333" }}>{noDataMessage}</div>
+    )}
+  </div>
+);
 
-
-<img
-          src={`http://localhost:5000/${item.fromUser.profilePicture}`} 
-          alt={item.fromUser.username}
-          style={{
-            width: "40px",
-            height: "40px",
-            borderRadius: "50%",
-            
-          }}
-        />
-                      {item.fromUser.username} - {item.fromUser.email}
-                      <button
-                        style={{
-                          marginLeft: "auto",
-                          padding: "4px 5px",
-                          cursor: "pointer",
-                          backgroundColor: "green",
-                          color: "white",
-                          border: "none",
-                          borderRadius: "5px",
-                        }}
-                        onClick={() => acceptFriendRequest(item.fromUser._id)}
-                      >
-                        Accept
-                      </button>
-                    </>
-                  )}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div style={{ color: "#333" }}>{noDataMessage}</div>
-          )}
-        </div>
-      );
     }
 
     return <div style={contentStyle}>Content for {activeSection} is not available yet.</div>;

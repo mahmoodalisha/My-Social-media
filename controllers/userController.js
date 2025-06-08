@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('../models/User');
+const Otp = require("../models/Otp");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const path = require('path');
@@ -8,26 +9,14 @@ const sharp = require('sharp');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const cloudinary = require('../config/cloudinary');
+const streamifier = require('streamifier');
+require('dotenv').config();
 
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = 'uploads/profile-pictures';
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+const upload = multer({ 
+  storage: multer.memoryStorage(), 
+  limits: { fileSize: 5 * 1024 * 1024 }, 
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.startsWith('image')) {
       return cb(new Error('Only image files are allowed!'), false);
@@ -35,6 +24,7 @@ const upload = multer({
     cb(null, true);
   }
 });
+
 
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET);
@@ -71,16 +61,16 @@ const loginUser = async (req, res) => {
   }
 };
 
-// Search users based on a search term (username or email)
+
 const searchUsers = async (req, res) => {
-  const { searchTerm } = req.query; // searchTerm will come from the query parameters
+  const { searchTerm } = req.query; 
 
   if (!searchTerm) {
       return res.status(400).json({ message: 'Search term is required' });
   }
 
   try {
-      // Find users whose username or email matches the search term
+      
       const users = await User.find({
           $or: [
               { username: { $regex: searchTerm, $options: 'i' } },
@@ -115,37 +105,45 @@ const getUserById = async (req, res) => {
 
 
 const uploadProfilePicture = async (req, res) => {
-  console.log(req.file);
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded' });
   }
 
-  const filePath = req.file.path;
   const userId = req.user.id;
 
   try {
-    // Resize the uploaded image to multiple sizes
-    const sizes = ['small', 'medium', 'large'];
-    const resizedPaths = [];
+    
+    const streamUpload = (buffer) => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: 'profile-pictures',
+            transformation: [{ width: 300, height: 300, crop: 'fill' }],
+          },
+          (error, result) => {
+            if (result) {
+              resolve(result);
+            } else {
+              reject(error);
+            }
+          }
+        );
+        streamifier.createReadStream(buffer).pipe(stream);
+      });
+    };
 
-    for (const size of sizes) {
-      const resizedFilePath = path.join('uploads/profile-pictures', `${size}-${req.file.filename}`);
-      await sharp(filePath)
-        .resize(size === 'small' ? 50 : size === 'medium' ? 150 : 300) 
-        .toFile(resizedFilePath);
-      resizedPaths.push(resizedFilePath);
-    }
+    const result = await streamUpload(req.file.buffer);
 
-    // Save the image paths in the user document
     const user = await User.findById(userId);
-    user.profilePicture = resizedPaths[2]; // Save the large size as the main profile picture
+    user.profilePicture = result.secure_url;
     await user.save();
 
-    res.status(200).json({ message: 'Profile picture uploaded successfully', profilePicture: resizedPaths[2] });
+    res.status(200).json({ message: 'Profile picture uploaded successfully', profilePicture: result.secure_url });
   } catch (error) {
     res.status(500).json({ message: 'Error uploading profile picture', error: error.message });
   }
 };
+
 
  
 
@@ -158,18 +156,13 @@ const deleteProfilePicture = async (req, res) => {
       return res.status(404).json({ message: 'Profile picture not found' });
     }
 
-    // Delete the profile picture file (along with resized versions)
-    const filePaths = ['small', 'medium', 'large'].map(size => 
-      path.join('uploads/profile-pictures', `${size}-${path.basename(user.profilePicture)}`)
-    );
     
-    filePaths.forEach(filePath => {
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      }
-    });
+    const parts = user.profilePicture.split('/');
+    const fileName = parts[parts.length - 1].split('.')[0];
+    const publicId = `profile-pictures/${fileName}`;
 
-    // Remove the profile picture path from the user
+    await cloudinary.uploader.destroy(publicId);
+
     user.profilePicture = null;
     await user.save();
 
@@ -178,6 +171,7 @@ const deleteProfilePicture = async (req, res) => {
     res.status(500).json({ message: 'Error deleting profile picture', error: error.message });
   }
 };
+
 
 const getProfilePicture = async (req, res) => {
   try {
@@ -188,13 +182,15 @@ const getProfilePicture = async (req, res) => {
     }
 
     if (!user.profilePicture) {
-      return res.status(404).json({ 
-        message: "Profile picture not set", 
-        userId: req.params.userId 
-      });
-    }
+  return res.status(200).json({
+    message: "Profile picture not set",
+    userId: req.params.userId,
+    profilePicture: null 
+  });
+}
 
-    // If the user exists and has a profile picture set
+
+    
     res.status(200).json({ 
       message: "Profile picture found", 
       userId: req.params.userId, 
@@ -208,53 +204,113 @@ const getProfilePicture = async (req, res) => {
   }
 };
 
-// Forgot Password - Send Email with Reset Link
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+const requestOtp = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // ✅ Check if email exists in User collection
+    const userExists = await User.findOne({ email });
+    if (!userExists) {
+      return res.status(404).json({ message: "This email is not associated with any account." });
+    }
+
+    // ⏳ Check if an OTP was already sent within the last 2 minutes
+    const recentOtp = await Otp.findOne({ email }).sort({ createdAt: -1 });
+
+    if (
+      recentOtp &&
+      Date.now() - new Date(recentOtp.createdAt).getTime() < 120000
+    ) {
+      return res.status(429).json({
+        message: "Please wait 2 minutes before requesting another OTP.",
+      });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    await Otp.deleteMany({ email });
+    await Otp.create({ email, otp });
+
+    await transporter.sendMail({
+      from: '"Login OTP" <mahmoodalisha35@gmail.com>',
+      to: email,
+      subject: "Your OTP Code",
+      text: `Your OTP is ${otp}. It will expire in 5 minutes.`,
+    });
+
+    res.status(200).json({ message: "OTP sent to email." });
+  } catch (err) {
+    console.error("Error sending OTP:", err);
+    res.status(500).json({ message: "Failed to send OTP." });
+  }
+};
+
+
+
+const verifyOtp = async (req, res) => {
+  const { email, otp } = req.body;
+
+  try {
+    const validOtp = await Otp.findOne({ email, otp });
+
+    if (!validOtp) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    await Otp.deleteMany({ email });
+
+    let user = await User.findOne({ email });
+    if (!user) {
+      
+      user = await User.create({ email });
+    }
+
+    res.status(200).json({ message: "OTP verified", user });
+  } catch (err) {
+    console.error("Error verifying OTP:", err);
+    res.status(500).json({ message: "Server error." });
+  }
+};
+
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
 
   try {
-    // Find the user with the provided email
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
 
-    // Generate reset token
-    const resetToken = crypto.randomBytes(20).toString('hex');
+    const resetToken = crypto.randomBytes(20).toString("hex");
     user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour expiration
+    user.resetPasswordExpires = Date.now() + 3600000;
     await user.save();
 
-    // Use Ethereal for local email testing
-    const testAccount = await nodemailer.createTestAccount();
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: testAccount.user, // Generated ethereal user
-        pass: testAccount.pass, // Generated ethereal password
-      },
-    });
-
-    // Compose email content
     const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
     const mailOptions = {
+      from: `"instagram" <${process.env.EMAIL_USER}>`,
       to: user.email,
-      from: testAccount.user,
-      subject: 'Password Reset Request',
+      subject: "Password Reset Request",
       text: `You are receiving this email because you requested a password reset. Click the link to reset your password: ${resetUrl}`,
     };
 
-    // Send the email
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
+        console.error("Error sending email:", error);
         return res.status(500).json({ message: "Error sending email." });
       }
 
-      // Log the preview URL for Ethereal testing
-      console.log('Preview URL:', nodemailer.getTestMessageUrl(info));
-      res.status(200).json({ message: "Password reset email sent.", previewUrl: nodemailer.getTestMessageUrl(info) });
+      console.log("Email sent:", info.response);
+      res.status(200).json({ message: "Password reset email sent." });
     });
   } catch (error) {
     console.error("Error:", error);
@@ -262,7 +318,7 @@ const forgotPassword = async (req, res) => {
   }
 };
 
-// Reset Password - Update the user's password
+
 const resetPassword = async (req, res) => {
   const { token, newPassword } = req.body;
 
@@ -276,10 +332,10 @@ const resetPassword = async (req, res) => {
       return res.status(400).json({ message: "Invalid or expired token." });
     }
 
-    // Hash the new password
+    
     user.password = await bcrypt.hash(newPassword, 10);
-    user.resetPasswordToken = undefined; // Clear reset token
-    user.resetPasswordExpires = undefined; // Clear expiration date
+    user.resetPasswordToken = undefined; 
+    user.resetPasswordExpires = undefined;
     await user.save();
 
     res.status(200).json({ message: "Password successfully updated." });
@@ -290,4 +346,4 @@ const resetPassword = async (req, res) => {
 };
 
 
-module.exports = { registerUser, loginUser, searchUsers, getUserById, uploadProfilePicture, deleteProfilePicture, getProfilePicture, forgotPassword, resetPassword };
+module.exports = { registerUser, loginUser, searchUsers, getUserById, uploadProfilePicture, deleteProfilePicture, getProfilePicture, forgotPassword, resetPassword, requestOtp, verifyOtp};

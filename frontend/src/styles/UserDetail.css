@@ -1,0 +1,78 @@
+.user-detail-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background-color: #fdfdfd;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.user-detail-container h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #333;
+}
+
+.user-detail-container p {
+  font-size: 18px;
+  margin: 10px 0;
+  color: #444;
+}
+
+.user-detail-container button {
+  padding: 10px 20px;
+  margin-top: 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.user-detail-container button.send {
+  background-color: #28a745;
+  color: white;
+}
+
+.user-detail-container button.withdraw {
+  background-color: #ffc107;
+  color: white;
+}
+
+.user-detail-container button.remove {
+  background-color: #dc3545;
+  color: white;
+}
+
+.user-detail-container button:hover {
+  opacity: 0.85;
+}
+
+.user-detail-info {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.profile-pic {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-right: 20px;
+  object-fit: cover;
+}
+
+.username {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.email {
+  font-size: 16px;
+  color: #666;
+  margin: 4px 0 0;
+}

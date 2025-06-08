@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaHeart, FaPen, FaTrashAlt } from 'react-icons/fa';
+import { MdFavorite, MdFavoriteBorder } from 'react-icons/md';
 import { RiWechatLine } from "react-icons/ri";
 import "../styles/Home.css";
 
@@ -16,6 +17,10 @@ const Home = () => {
     const [visibleComments, setVisibleComments] = useState({}); 
     const limit = 10; 
 
+    useEffect(() => {
+            const id = localStorage.getItem('userId');
+            setUserId(id); 
+        }, []);
 
 
     const fetchPosts = async () => {
@@ -362,7 +367,7 @@ const handleAddReplyToReply = async (postId, commentId, replyId) => {
     
 return (
     <div className="home">
-        <h1>Instagram</h1>
+        <h1 className="instagram-heading">Dooodle</h1>
         {loading && <p>Loading...</p>}
         {posts.map((post) => {
             const userLikesPost = post.likes ? post.likes.includes(userId) : false;
@@ -372,7 +377,7 @@ return (
                         <div className="post-user-info">
                             {post.user.profilePicture && (
                                 <img
-                                    src={`http://localhost:5000/${post.user.profilePicture}`}
+                                    src={post.user.profilePicture}
                                     alt={post.user.username}
                                     className="profile-picture"
                                 />
@@ -385,13 +390,13 @@ return (
                         {post.media && post.media.url && (
                             post.media.type === 'photo' ? (
                                 <img
-                                    src={`http://localhost:5000/${post.media.url}`}
+                                    src={post.media.url}
                                     alt="Post media"
                                     className="post-media"
                                 />
                             ) : (
                                 <video controls className="post-media">
-                                    <source src={`http://localhost:5000/${post.media.url}`} type="video/mp4" />
+                                    <source src={post.media.url} type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
                             )
@@ -400,8 +405,14 @@ return (
                     <div className="post-actions">
                         <div className="action-button">
                             <button onClick={() => toggleLike(post._id)} className="like-button">
-                                <FaHeart color={userLikesPost ? 'red' : 'grey'} size={24} />
-                            </button>
+                            {userLikesPost ? (
+                        <MdFavorite color="red" size={24} />
+                            ) : (
+                            <MdFavoriteBorder color="grey" size={24} />
+                    )}
+                </button>
+
+
                             <span style={{ color: "#333" }}>
                                 {post.likesCount || 0} {post.likesCount === 1 ? 'like' : 'likes'}
                             </span>
@@ -433,7 +444,7 @@ return (
                                         <div className="comment-header">
                                             {comment.profilePicture ? (
                                                 <img
-                                                    src={`http://localhost:5000/${comment.profilePicture}`}
+                                                    src={comment.profilePicture}
                                                     alt={`${comment.username}'s profile`}
                                                     className="profile-picture"
                                                 />
@@ -472,7 +483,7 @@ return (
                                                 <div className="reply-content">
                                                     {reply.profilePicture ? (
                                                         <img
-                                                            src={`http://localhost:5000/${reply.profilePicture}`}
+                                                            src={reply.profilePicture}
                                                             alt={`${reply.username}'s profile`}
                                                             className="profile-picture"
                                                         />

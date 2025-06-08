@@ -1,12 +1,12 @@
 .login-container {
     max-width: 500px;
-    margin: 50px auto; /* Consistent spacing with register container */
-    padding: 3px; /* Matches the register container padding */
-    background-color: #f9f9f9; /* Same light background for consistency */
+    margin: 50px auto; 
+    padding: 3px; 
+    background-color: #f9f9f9; 
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     color: #333;
-    width: auto; /* Ensure container width is adjusted based on content */
+    width: auto; 
     height: auto;
 }
 
@@ -19,34 +19,34 @@
 }
 
 h2 {
-    color: #222222; /* Matches the register heading color */
+    color: #222222; 
     font-weight: bold;
-    margin-bottom: 10px; /* Consistent margin with register heading */
-    font-size: 2rem; /* Similar size for better legibility */
+    margin-bottom: 10px; 
+    font-size: 2rem; 
     text-align: center;
 }
 
 .form-control {
-    width: 100%; /* Uniform full width */
-    padding: 8px; /* Consistent padding with register inputs */
+    width: 100%; 
+    padding: 8px; 
     box-sizing: border-box;
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #f0f0f0;
     color: #333;
-    font-size: 1.1rem; /* Adjust font size to match design intent */
+    font-size: 1.1rem; 
 }
 
 .form-control:focus {
     background-color: #e6e6e6;
-    border-color: #8b0c0c; /* Matches register focus style */
+    border-color: #8b0c0c; 
     outline: none;
     box-shadow: none;
 }
 
 .form-label {
     display: block;
-    margin-bottom: 3px; /* Align with register label styling */
+    margin-bottom: 3px; 
     font-weight: bold;
     font-size: 1.1rem; 
     color: #333;
@@ -55,7 +55,7 @@ h2 {
 .btn-primary {
     background-color: #333; 
     border-color: #333;
-    padding: 8px; /* Same as the register submit button */
+    padding: 8px; 
     font-size: 1.1rem;
     width: 100%;
     border-radius: 5px;

@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import '../styles/Register.css'
 
 const RegisterSchema = Yup.object().shape({
@@ -13,6 +14,7 @@ const RegisterSchema = Yup.object().shape({
 
 const Register = () => {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div className="register-container">
@@ -20,16 +22,23 @@ const Register = () => {
       <Formik
         initialValues={{ username: "", email: "", password: "" }}
         validationSchema={RegisterSchema}
-        onSubmit={async (values) => {
-          try {
-            const response = await axios.post("http://localhost:5000/api/users/register", values);
-            if (response.status === 200) {
-              navigate("/login");
-            }
-          } catch (error) {
-            console.error("Registration failed:", error);
-          }
-        }}
+        onSubmit={async (values, { setSubmitting }) => {
+  try {
+    const response = await axios.post("http://localhost:5000/api/users/register", values);
+    if (response.status === 200 || response.status === 201) {
+  alert("Registration successful! Redirecting to login...");
+  setTimeout(() => {
+    navigate("/login");
+  }, 1000);
+}
+
+  } catch (error) {
+    console.error("Registration failed:", error);
+  } finally {
+    setSubmitting(false);
+  }
+}}
+
       >
         {({ errors, touched }) => (
           <Form>
@@ -43,11 +52,30 @@ const Register = () => {
               <Field name="email" type="email" />
               {errors.email && touched.email && <div>{errors.email}</div>}
             </div>
-            <div>
-              <label>Password</label>
-              <Field name="password" type="password" />
-              {errors.password && touched.password && <div>{errors.password}</div>}
-            </div>
+            <div style={{ position: "relative" }}>
+  <label>Password</label>
+  <Field
+    name="password"
+    type={showPassword ? "text" : "password"}
+    style={{ paddingRight: "30px" }} 
+  />
+  <span
+    onClick={() => setShowPassword((prev) => !prev)}
+    style={{
+      position: "absolute",
+      top: "60%",
+      right: "10px",
+      transform: "translateY(-50%)",
+      cursor: "pointer",
+      fontSize: "17px", 
+      color: "#333"
+    }}
+  >
+    {showPassword ? <FaEyeSlash /> : <FaEye />}
+  </span>
+  {errors.password && touched.password && <div>{errors.password}</div>}
+</div>
+
             <button type="submit">Register</button>
           </Form>
         )}

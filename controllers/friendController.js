@@ -12,10 +12,10 @@ const validateUserRequest = async (fromUserId, toUserId) => {
     const toUser = await User.findById(toUserId);
     if (!toUser) return { success: false, message: 'To user not found' };
 
-    // Prevent users from sending friend requests to themselves
+    // prevent users from sending friend requests to themselves
     if (fromUserId === toUserId) return { success: false, message: "You cannot send a friend request to yourself" };
 
-    // Prevent users from sending a friend request to someone who is already their friend
+    // just to prevent users from sending a friend request to someone who is already their friend
     const existingFriendship = await Friends.findOne({
         $or: [
             { user1: fromUserId, user2: toUserId },
@@ -24,7 +24,7 @@ const validateUserRequest = async (fromUserId, toUserId) => {
     });
     if (existingFriendship) return { success: false, message: 'You are already friends with this user' };
 
-    // Check if a friend request already exists
+    // i am Checking if a friend request already exists
     const existingRequest = await FriendRequests.findOne({ fromUser: fromUserId, toUser: toUserId });
     if (existingRequest) return { success: false, message: 'Friend request already sent' };
 
@@ -33,7 +33,8 @@ const validateUserRequest = async (fromUserId, toUserId) => {
 
 // Send a friend request
 const sendFriendRequest = async (req, res) => {
-    const { fromUserId, toUserId } = req.body;
+    const fromUserId = req.user.id; 
+    const { toUserId } = req.body;
 
     if (!toUserId) return res.status(400).json({ message: 'To user ID is required' });
 
@@ -59,24 +60,26 @@ const sendFriendRequest = async (req, res) => {
 
 // Fetch pending friend requests for a user
 const getPendingFriendRequests = async (req, res) => {
-    const { userId } = req.params;
-  
-    try {
-        const pendingRequests = await FriendRequests.find({
-            toUser: userId,
-            status: 'pending'
-        }).populate('fromUser', 'username email profilePicture'); // Populate only the sender's info
-  
-        // Always return an array (even if empty)
-        return res.status(200).json(pendingRequests || []); 
-  
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching pending friend requests: ' + error.message });
-    }
-  };
+  const { userId } = req.params;
+
+  try {
+    let pendingRequests = await FriendRequests.find({
+      toUser: userId,
+      status: 'pending'
+    }).populate('fromUser', 'username email profilePicture');
+
+    // Filter out requests with deleted users
+    pendingRequests = pendingRequests.filter(req => req.fromUser !== null);
+
+    return res.status(200).json(pendingRequests);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching pending friend requests: ' + error.message });
+  }
+};
+
   
 
-// Accept a friend request
+
 const acceptFriendRequest = async (req, res) => {
     const { fromUserId, toUserId } = req.body;
 
@@ -102,9 +105,10 @@ const acceptFriendRequest = async (req, res) => {
     }
 };
 
-// Withdraw a friend request
+
 const withdrawFriendRequest = async (req, res) => {
-    const { fromUserId, toUserId } = req.body;
+    const fromUserId = req.user.id; 
+    const { toUserId } = req.body;
 
     try {
         const friendRequest = await FriendRequests.findOne({ fromUser: fromUserId, toUser: toUserId, status: 'pending' });
@@ -140,7 +144,7 @@ const getFriends = async (req, res) => {
     }
 }; 
 
-// Remove a friend
+
 const removeFriend = async (req, res) => {
     const { userId, friendId } = req.body;
 
@@ -174,5 +178,22 @@ const removeFriend = async (req, res) => {
     }
 };
 
+// Get friend requests sent by a user
+const getSentFriendRequests = async (req, res) => {
+  const { userId } = req.params;
 
-module.exports = { sendFriendRequest, acceptFriendRequest, getFriends, getPendingFriendRequests, withdrawFriendRequest, removeFriend };
+  try {
+    const sentRequests = await FriendRequests.find({
+      fromUser: userId,
+      status: 'pending',
+    }).populate('toUser', 'username email profilePicture');
+
+    return res.status(200).json(sentRequests || []);
+  } catch (error) {
+    return res.status(500).json({ message: 'Error fetching sent friend requests: ' + error.message });
+  }
+};
+
+
+
+module.exports = { sendFriendRequest, acceptFriendRequest, getFriends, getPendingFriendRequests, withdrawFriendRequest, removeFriend, getSentFriendRequests };

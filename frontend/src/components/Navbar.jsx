@@ -30,9 +30,10 @@ const Navbar = () => {
           }
         );
 
-        if (profileResponse.data.profilePicture) {
-          setProfilePicture(profileResponse.data.profilePicture);
-        }
+        // If profilePicture is null or empty, set state accordingly
+    setProfilePicture(profileResponse.data.profilePicture || "");
+
+        
 
        
         const userResponse = await axios.get(
@@ -89,14 +90,20 @@ const Navbar = () => {
         <div className={styles["logo-container"]}>
           {profilePicture ? (
             <img
-              src={`http://localhost:5000/${profilePicture}`}
+              src={profilePicture}
               alt="Profile"
               className={styles["logo-profile-picture"]}
             />
           ) : (
-            <p>Your Logo</p>
+            <img
+    src="/images/user-profile-icon.jpg"  
+    alt="Default Profile"
+    className={styles["logo-profile-picture"]}
+  />
           )}
-          {username && <span className={styles.username}> {username}</span>} 
+          <span className={styles.username}>
+    {username || "Guest"}
+  </span>
         </div>
         <ul className={styles["nav-menu"]}>
           <li><Link to="/home">Home</Link></li>
@@ -110,13 +117,7 @@ const Navbar = () => {
   value={searchTerm}
   onChange={handleSearchChange}
   placeholder="Search users..."
-  style={{
-    width: "300px", 
-    padding: "8px",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    fontSize: "1rem",
-  }}
+  className={styles["search-input"]}
 />
 
             <div className={styles["search-icon"]} onClick={handleSearch} style={{ marginLeft: "5px" }}>
@@ -130,7 +131,7 @@ const Navbar = () => {
         <div className={styles["search-results"]}>
           {searchResults.map(user => (
             <p key={user._id} onClick={() => handleUserClick(user._id)}>
-              {user.username} ({user.email})
+              {user.username} 
             </p>
           ))}
         </div>
