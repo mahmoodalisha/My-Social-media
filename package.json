@@ -1,4 +1,12 @@
 {
+  "name": "api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "cd ./frontend && npm i && npm run build"
+  },
   "dependencies": {
     "@reduxjs/toolkit": "^2.3.0",
     "ajv": "^8.17.1",
