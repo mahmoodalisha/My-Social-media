@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const postRoutes = require('./routes/PostRoutes');
 const userRoutes = require('./routes/userRoutes');
 const friendRoutes = require('./routes/friendRoutes');
+const path = require("path")
 
 dotenv.config();
 const app = express();
@@ -16,15 +17,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('uploads'));
 app.use('/uploads/profile-pictures', express.static('uploads/profile-pictures'));
 
-const uri = process.env.MONGODB_URI;
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => {
-        console.log('Connected to MongoDB');
-    })
+const db = process.env.MONGODB_URI;
+
+mongoose.connect(db)
+    .then(() => console.log("MongoDB connected..."))
     .catch(err => {
-        console.error('MongoDB connection error:', err);
+        console.error("MongoDB connection error:", err);
     });
 
+    //telling backend to look for frontend here in this folder
+    app.use(express.static(path.resolve(__dirname, 'frontend', 'build')))
+
+    app.get("/test",(req,res)=>{
+    res.send("Express app is running")
+    })
 
 app.use('/api', postRoutes);
 app.use('/api/users', userRoutes);
@@ -37,6 +43,18 @@ app.use((err, req, res, next) => {
     res.status(500).json({ message: 'Something went wrong!', error: err.message });
 });
 
+
+//serving frontend routes first
+app.get('*', (req, res) => {
+    res.sendFile(
+        path.resolve(__dirname, 'frontend', 'build', 'index.html'),
+        function (err) {
+            if (err) {
+                res.status(500).send(err)
+            }
+        }
+    )
+});
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
