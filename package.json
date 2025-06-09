@@ -4,8 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "build": "cd ./frontend && npm i && npm run build"
+    "start": "node server.js"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.3.0",

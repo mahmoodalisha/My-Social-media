@@ -29,7 +29,7 @@ mongoose.connect(db)
     });
 
     //telling backend to look for frontend here in this folder
-    app.use(express.static(path.resolve(__dirname, 'frontend', 'build')))
+    //app.use(express.static(path.resolve(__dirname, 'frontend', 'build')))
 
     app.get("/test",(req,res)=>{
     res.send("Express app is running")
@@ -48,7 +48,7 @@ app.use((err, req, res, next) => {
 
 
 //serving frontend routes first
-app.get('*', (req, res) => {
+/*app.get('*', (req, res) => {
     res.sendFile(
         path.resolve(__dirname, 'frontend', 'build', 'index.html'),
         function (err) {
@@ -57,7 +57,7 @@ app.get('*', (req, res) => {
             }
         }
     )
-});
+}); */
 
 app.listen(5000, () => {
     //connect();
