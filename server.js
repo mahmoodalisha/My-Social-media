@@ -1,23 +1,26 @@
+require("dotenv").config()
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const db = process.env.MONGODB_URI;
+const path = require("path")
+
 const postRoutes = require('./routes/PostRoutes');
 const userRoutes = require('./routes/userRoutes');
 const friendRoutes = require('./routes/friendRoutes');
-const path = require("path")
 
-dotenv.config();
+
 const app = express();
 app.use(cors());
 
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+//app.use(express.urlencoded({ extended: true }));
 app.use(express.static('uploads'));
 app.use('/uploads/profile-pictures', express.static('uploads/profile-pictures'));
 
-const db = process.env.MONGODB_URI;
+
 
 mongoose.connect(db)
     .then(() => console.log("MongoDB connected..."))
