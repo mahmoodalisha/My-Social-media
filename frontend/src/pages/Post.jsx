@@ -3,6 +3,7 @@ import axios from 'axios';
 import '../styles/Post.css'; 
 
 const Post = () => {
+    const apiBase = process.env.REACT_APP_SERVER_URL;
     const [content, setContent] = useState('');
     const [media, setMedia] = useState(null);
     const [userId, setUserId] = useState(null); 
@@ -31,7 +32,7 @@ const Post = () => {
     
         try {
             const response = await axios.post(
-                'http://localhost:5000/api/posts',
+                `${apiBase}/api/posts`,
                 formData,
                 {
                     headers: {

@@ -6,6 +6,7 @@ import { RiWechatLine } from "react-icons/ri";
 import "../styles/Home.css";
 
 const Home = () => {
+    const apiBase = process.env.REACT_APP_SERVER_URL;
     const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(true);
@@ -34,7 +35,7 @@ const Home = () => {
 
         try {
             console.log('Fetching posts for userId:', userId, 'Page:', page);
-            const response = await axios.get(`http://localhost:5000/api/posts`, {
+            const response = await axios.get(`${apiBase}/api/posts`, {
                 params: { userId, page, limit },
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -71,7 +72,7 @@ const Home = () => {
 
         try {
             const response = await axios.post(
-                `http://localhost:5000/api/posts/like`, 
+                `${apiBase}/api/posts/like`, 
                 { postId, fromUserId: userId },  
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -108,7 +109,7 @@ const Home = () => {
 
         try {
             const response = await axios.post(
-                `http://localhost:5000/api/posts/comments`, 
+                `${apiBase}/api/posts/comments`, 
                 { postId: String(postId), userId, content: comment }, 
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -134,7 +135,7 @@ const Home = () => {
         }
 
         try {
-            const response = await axios.get(`http://localhost:5000/api/posts/${postId}/comments`, {
+            const response = await axios.get(`${apiBase}/api/posts/${postId}/comments`, {
                 params: { userId },
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -194,7 +195,7 @@ const Home = () => {
     
             
             const response = await axios.put(
-                `http://localhost:5000/api/posts/comments/edit`,
+                `${apiBase}/api/posts/comments/edit`,
                 {
                     postId,
                     userId,
@@ -241,7 +242,7 @@ const Home = () => {
         console.log('Comment ID being sent:', commentId);
         console.log('User ID being sent:', userId);
 
-        const response = await axios.delete(`http://localhost:5000/api/posts/comments/delete`, {
+        const response = await axios.delete(`${apiBase}/api/posts/comments/delete`, {
             data: { postId, userId, commentId },
             
         });
@@ -281,7 +282,7 @@ const handleAddReply = async (postId, commentId) => {
         console.log("User ID being sent:", userId);
 
         const response = await axios.post(
-            `http://localhost:5000/api/posts/comments/replies`,
+            `${apiBase}/api/posts/comments/replies`,
             {
                 postId,
                 commentId,
@@ -327,7 +328,7 @@ const handleAddReplyToReply = async (postId, commentId, replyId) => {
 
     try {
         const response = await axios.post(
-            `http://localhost:5000/api/posts/comments/replies/reply-to-reply`,
+            `${apiBase}/api/posts/comments/replies/reply-to-reply`,
             {
                 postId,
                 replyId,

@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../styles/Register.css"; 
 const ForgotPassword = () => {
+  const apiBase = process.env.REACT_APP_SERVER_URL;
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -13,7 +14,7 @@ const ForgotPassword = () => {
     setErrorMessage("");
     setMessage("");
     try {
-      const response = await axios.post("http://localhost:5000/api/users/forgot-password", { email });
+      const response = await axios.post(`${apiBase}/api/users/forgot-password`, { email });
       if (response.status === 200) {
         setMessage("Password reset link sent! Check your email.");
         setTimeout(() => navigate("/login"), 10000); 

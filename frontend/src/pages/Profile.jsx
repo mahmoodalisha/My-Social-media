@@ -4,6 +4,7 @@ import '../styles/Profile.css';
 import Activities from '../components/Activities';
 
 const Profile = () => {
+  const apiBase = process.env.REACT_APP_SERVER_URL;
   const [selectedFile, setSelectedFile] = useState(null);
   const [profilePicture, setProfilePicture] = useState("");
   const [username, setUsername] = useState("");
@@ -20,7 +21,7 @@ const Profile = () => {
 
         
         const pictureResponse = await axios.get(
-          `http://localhost:5000/api/users/${userId}/get-profile-picture`,
+          `${apiBase}/api/users/${userId}/get-profile-picture`,
           {
             headers: {
               "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -35,7 +36,7 @@ const Profile = () => {
 
         // Fetch user details
         const userResponse = await axios.get(
-          `http://localhost:5000/api/users/${userId}`,
+          `${apiBase}/api/users/${userId}`,
           {
             headers: {
               "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -73,7 +74,7 @@ const Profile = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/users/upload-profile-picture",
+        `${apiBase}/api/users/upload-profile-picture`,
         formData,
         {
           headers: {
@@ -96,7 +97,7 @@ const Profile = () => {
   
   const handleDeleteProfilePicture = async () => {
     try {
-      await axios.delete("http://localhost:5000/api/profile/delete-profile-picture", {
+      await axios.delete(`${apiBase}/api/profile/delete-profile-picture`, {
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("token")}`,
         },

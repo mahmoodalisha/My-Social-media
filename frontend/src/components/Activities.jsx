@@ -3,6 +3,7 @@ import axios from "axios";
 import "../styles/Navbar2.css";
 
 const Activities = () => {
+  const apiBase = process.env.REACT_APP_SERVER_URL;
   const [activeSection, setActiveSection] = useState("Friends");
   const [friends, setFriends] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
@@ -25,8 +26,8 @@ const Activities = () => {
       try {
         const endpoint =
           activeSection === "Friends"
-            ? `http://localhost:5000/api/friends/${userId}/friends`
-            : `http://localhost:5000/api/friends/${userId}/pending-requests`;
+            ? `${apiBase}/api/friends/${userId}/friends`
+            : `${apiBase}/api/friends/${userId}/pending-requests`;
 
         const { data } = await axios.get(endpoint, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -53,7 +54,7 @@ const Activities = () => {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/api/friends/friend-request/accept",
+        `${apiBase}/api/friends/friend-request/accept`,
         { fromUserId, toUserId },
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
@@ -75,7 +76,7 @@ const Activities = () => {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/api/friends/remove-friend",
+        `${apiBase}/api/friends/remove-friend`,
         { userId, friendId },
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );

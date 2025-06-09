@@ -4,6 +4,7 @@ import '../styles/UserDetail.css';
 import axios from 'axios';
 
 const UserDetail = () => {
+  const apiBase = process.env.REACT_APP_SERVER_URL;
   const { userId } = useParams();
   const [userDetails, setUserDetails] = useState(null);
   const [friendRequestSent, setFriendRequestSent] = useState(false);
@@ -16,7 +17,7 @@ const UserDetail = () => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/users/${userId}`, {
+        const response = await axios.get(`${apiBase}/api/users/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -32,7 +33,7 @@ const UserDetail = () => {
     const fetchSentFriendRequests = async () => {
   try {
     const response = await axios.get(
-      `http://localhost:5000/api/friends/${localStorage.getItem("userId")}/sent-requests`,
+      `${apiBase}/api/friends/${localStorage.getItem("userId")}/sent-requests`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
 
@@ -66,7 +67,7 @@ const UserDetail = () => {
 
       try {
         const { data } = await axios.get(
-          `http://localhost:5000/api/friends/${currentUserId}/friends`,
+          `${apiBase}/api/friends/${currentUserId}/friends`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -85,7 +86,7 @@ const UserDetail = () => {
     const currentUserId = localStorage.getItem("userId");
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/api/friends/remove-friend",
+        `${apiBase}/api/friends/remove-friend`,
         { userId: currentUserId, friendId: userId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -101,7 +102,7 @@ const UserDetail = () => {
   const handleSendFriendRequest = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/friends/friend-request',
+        `${apiBase}/api/friends/friend-request`,
         { toUserId: userId },
         {
           headers: {
@@ -122,7 +123,7 @@ const UserDetail = () => {
   const handleWithdrawFriendRequest = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/friends/withdraw',
+        `${apiBase}/api/friends/withdraw`,
         { toUserId: userId },
         {
           headers: {

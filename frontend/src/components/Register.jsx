@@ -13,6 +13,7 @@ const RegisterSchema = Yup.object().shape({
 });
 
 const Register = () => {
+  const apiBase = process.env.REACT_APP_SERVER_URL;
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -24,7 +25,7 @@ const Register = () => {
         validationSchema={RegisterSchema}
         onSubmit={async (values, { setSubmitting }) => {
   try {
-    const response = await axios.post("http://localhost:5000/api/users/register", values);
+    const response = await axios.post(`${apiBase}/api/users/register`, values);
     if (response.status === 200 || response.status === 201) {
   alert("Registration successful! Redirecting to login...");
   setTimeout(() => {

@@ -5,6 +5,7 @@ import axios from 'axios';
 import styles from "../styles/Navbar.module.css";
 
 const Navbar = () => {
+  const apiBase = process.env.REACT_APP_SERVER_URL;
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -22,7 +23,7 @@ const Navbar = () => {
 
         
         const profileResponse = await axios.get(
-          `http://localhost:5000/api/users/${userId}/get-profile-picture`,
+          `${apiBase}/api/users/${userId}/get-profile-picture`,
           {
             headers: {
               "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -37,7 +38,7 @@ const Navbar = () => {
 
        
         const userResponse = await axios.get(
-          `http://localhost:5000/api/users/${userId}`,
+          `${apiBase}/api/users/${userId}`,
           {
             headers: {
               "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -73,7 +74,7 @@ const Navbar = () => {
   const handleSearch = async () => {
     if (!searchTerm.trim()) return;
     try {
-      const response = await axios.get(`http://localhost:5000/api/users/search?searchTerm=${searchTerm}`);
+      const response = await axios.get(`${apiBase}/api/users/search?searchTerm=${searchTerm}`);
       setSearchResults(response.data);
     } catch (err) {
       console.error('Error searching for users:', err);

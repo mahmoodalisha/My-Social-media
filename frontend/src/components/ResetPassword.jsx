@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "../styles/Register.css";
 
 const ResetPassword = () => {
+  const apiBase = process.env.REACT_APP_SERVER_URL;
   const [newPassword, setNewPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [message, setMessage] = useState("");
@@ -19,7 +20,7 @@ const ResetPassword = () => {
     setMessage("");
 
     try {
-      const response = await axios.post("http://localhost:5000/api/users/reset-password", { token, newPassword });
+      const response = await axios.post(`${apiBase}/api/users/reset-password`, { token, newPassword });
       if (response.status === 200) {
         setMessage("Your password has been successfully reset!");
         setTimeout(() => navigate("/login"), 10000); 

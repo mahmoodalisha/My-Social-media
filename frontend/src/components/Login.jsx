@@ -15,6 +15,7 @@ const LoginSchema = Yup.object().shape({
 });
 
 const Login = () => {
+  const apiBase = process.env.REACT_APP_SERVER_URL;
   const navigate = useNavigate();
   const { login } = useAuth();
   const dispatch = useDispatch();
@@ -34,7 +35,7 @@ const Login = () => {
   setSuccessMessage("");
 
   try {
-    const response = await axios.post("http://localhost:5000/api/users/request-otp", { email });
+    const response = await axios.post(`${apiBase}/api/users/request-otp`, { email });
     setSuccessMessage(response.data.message);  
     setOtpSent(true);
   } catch (error) {
@@ -55,13 +56,13 @@ const Login = () => {
   try {
     const fullOtp = verificationCode.join(""); 
 
-    const otpResponse = await axios.post("http://localhost:5000/api/users/verify-otp", {
+    const otpResponse = await axios.post(`${apiBase}/api/users/verify-otp`, {
       email: values.email,
       otp: fullOtp,
     });
 
     if (otpResponse.status === 200) {
-      const loginResponse = await axios.post("http://localhost:5000/api/users/login", values);
+      const loginResponse = await axios.post(`${apiBase}/api/users/login`, values);
 
       if (loginResponse.status === 200) {
         const userData = loginResponse.data;
