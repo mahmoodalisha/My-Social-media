@@ -131,7 +131,7 @@ const Activities = () => {
                     marginRight: "10px",
                   }}
                 />
-                {item.username} - {item.email}
+                {item.username}
                 <button
                   style={{
                     marginLeft: "auto",
@@ -159,7 +159,7 @@ const Activities = () => {
                     marginRight: "10px",
                   }}
                 />
-                {item.fromUser.username} - {item.fromUser.email}
+                {item.fromUser.username}
                 <button
                   style={{
                     marginLeft: "auto",

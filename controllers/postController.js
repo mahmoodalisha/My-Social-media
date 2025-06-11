@@ -75,8 +75,8 @@ const getPosts = async (req, res) => {
         user: {
           type: postUser.media ? postUser.media.type : undefined,
           url: postUser.media ? postUser.media.url : undefined,
-          username: postUser.username,
-          profilePicture: postUser.profilePicture, 
+          username: postUser ? postUser.username : "Deleted User",
+          profilePicture: postUser ? postUser.profilePicture : undefined, 
         },
         _id: post._id,
         content: post.content,
@@ -89,7 +89,7 @@ const getPosts = async (req, res) => {
           return {
             commentId: comment.commentId,
             userId: comment.userId,
-            userName: commentUser ? commentUser.username : undefined,
+            userName: commentUser ? commentUser.username : "Deleted User",
             content: comment.content,
             timestamp: comment.timestamp,
             likes: comment.likes,
@@ -99,7 +99,7 @@ const getPosts = async (req, res) => {
               return {
                 replyId: reply.replyId,
                 userId: reply.userId,
-                userName: replyUser ? replyUser.username : undefined,
+                userName: replyUser ? replyUser.username : "Deleted User",
                 content: reply.content,
                 timestamp: reply.timestamp,
                 _id: reply._id,

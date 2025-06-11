@@ -98,13 +98,28 @@ const getPendingFriendRequests = async (req, res) => {
     }).populate('fromUser', 'username email profilePicture');
 
     // Filter out requests with deleted users
-    pendingRequests = pendingRequests.filter(req => req.fromUser !== null);
+    const validRequests = [];
+    const deletedRequestIds = [];
 
-    return res.status(200).json(pendingRequests);
+    for (const req of pendingRequests) {
+      if (req.fromUser) {
+        validRequests.push(req);
+      } else {
+        deletedRequestIds.push(req._id);
+      }
+    }
+
+    // Clean up deleted users' requests
+    if (deletedRequestIds.length > 0) {
+      await FriendRequests.deleteMany({ _id: { $in: deletedRequestIds } });
+    }
+
+    return res.status(200).json(validRequests);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching pending friend requests: ' + error.message });
   }
 };
+
 
   
 
@@ -163,15 +178,21 @@ const getFriends = async (req, res) => {
             $or: [{ user1: userId }, { user2: userId }]
         }).populate('user1 user2', 'username email profilePicture');
 
-        const friends = friendships.map(friendship =>
-            friendship.user1._id.toString() === userId ? friendship.user2 : friendship.user1
-        );
+        const friends = friendships
+            .filter(friendship => friendship.user1 && friendship.user2) // filter out friendships with deleted users
+            .map(friendship => {
+                const user1 = friendship.user1;
+                const user2 = friendship.user2;
+
+                return user1._id.toString() === userId ? user2 : user1;
+            });
 
         res.status(200).json(friends);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching friends: ' + error.message });
     }
-}; 
+};
+
 
 
 const removeFriend = async (req, res) => {
@@ -226,11 +247,28 @@ const getSentFriendRequests = async (req, res) => {
       status: 'pending',
     }).populate('toUser', 'username email profilePicture');
 
-    return res.status(200).json(sentRequests || []);
+    const validRequests = [];
+    const deletedRequestIds = [];
+
+    for (const req of sentRequests) {
+      if (req.toUser) {
+        validRequests.push(req);
+      } else {
+        deletedRequestIds.push(req._id);
+      }
+    }
+
+    // Remove friend requests sent to deleted users
+    if (deletedRequestIds.length > 0) {
+      await FriendRequests.deleteMany({ _id: { $in: deletedRequestIds } });
+    }
+
+    return res.status(200).json(validRequests);
   } catch (error) {
     return res.status(500).json({ message: 'Error fetching sent friend requests: ' + error.message });
   }
 };
+
 
 
 
