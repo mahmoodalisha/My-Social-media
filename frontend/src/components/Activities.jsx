@@ -122,7 +122,7 @@ const Activities = () => {
             {activeSection === "Friends" ? (
               <>
                 <img
-                  src={item.profilePicture}
+                  src={item.profilePicture || "Deleted User"}
                   alt={item.username}
                   style={{
                     width: "40px",
