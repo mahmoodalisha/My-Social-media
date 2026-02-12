@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Provider } from "react-redux"; 
-import { AuthProvider } from "./context/AuthContext"; 
 import store from "./redux/store"; 
 import Login from "./components/Login";
 import ForgotPassword from "./components/ForgotPassword";
@@ -18,7 +17,6 @@ const App = () => {
   return (
     
     <Provider store={store}>
-      <AuthProvider>
         <Router>
           <Layout>
             <Routes>
@@ -76,7 +74,6 @@ const App = () => {
             </Routes>
           </Layout>
         </Router>
-      </AuthProvider>
     </Provider>
   );
 };
