@@ -224,43 +224,67 @@ const transporter = nodemailer.createTransport({
 });
 
 const requestOtp = async (req, res) => {
+  console.log("requestOtp route HIT");
+  console.log("Request body:", req.body);
+
   const { email } = req.body;
 
   try {
-    // ✅ Check if email exists in User collection
+    console.log("Checking user in DB...");
     const userExists = await User.findOne({ email });
+    console.log("User exists:", !!userExists);
+
     if (!userExists) {
+      console.log(" User not found");
       return res.status(404).json({ message: "This email is not associated with any account." });
     }
 
-    // ⏳ Check if an OTP was already sent within the last 2 minutes
+    console.log(" Checking recent OTP...");
+    // Check if an OTP was already sent within the last 2 minutes
     const recentOtp = await Otp.findOne({ email }).sort({ createdAt: -1 });
 
     if (
       recentOtp &&
       Date.now() - new Date(recentOtp.createdAt).getTime() < 120000
     ) {
+      console.log("⚠️ OTP requested too soon");
       return res.status(429).json({
         message: "Please wait 2 minutes before requesting another OTP.",
       });
     }
 
+    console.log(" Generating OTP...");
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log("OTP:", otp);
 
+    console.log(" Deleting old OTPs...");
     await Otp.deleteMany({ email });
+
+    console.log(" Saving new OTP...");
     await Otp.create({ email, otp });
 
+    console.log("Preparing to send email...");
+    console.log("EMAIL_USER:", process.env.EMAIL_USER);
+    console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
+
     await transporter.sendMail({
-      from: '"Login OTP" <mahmoodalisha35@gmail.com>',
+      from: `"Login OTP" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Your OTP Code",
       text: `Your OTP is ${otp}. It will expire in 5 minutes.`,
     });
 
+    console.log(" EMAIL SENT SUCCESSFULLY");
+
     res.status(200).json({ message: "OTP sent to email." });
+
   } catch (err) {
-    console.error("Error sending OTP:", err);
-    res.status(500).json({ message: "Failed to send OTP." });
+    console.error("ERROR NAME:", err.name);
+    console.error("ERROR MESSAGE:", err.message);
+    console.error("FULL ERROR:", err);
+
+    // IMPORTANT: send real error to frontend
+    res.status(500).json({ message: err.message });
   }
 };
 
